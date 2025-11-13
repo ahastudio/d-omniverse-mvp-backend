@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   include Authenticatable
 
+  has_many :posts
+
   validates :id, presence: true, uniqueness: true
 
   validates :username, presence: true, uniqueness: true
