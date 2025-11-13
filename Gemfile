@@ -4,6 +4,8 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.1"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
+# Use postgresql as the database for Active Record
+gem "pg", "~> 1.6"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -47,4 +49,16 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Load environment variables from .env (https://github.com/bkeepers/dotenv)
+  gem "dotenv-rails", "~> 3.1"
 end
+
+# Universally Unique Lexicographically Sortable Identifier generator (https://github.com/rafaelfranca/ulid)
+gem "ulid", "~> 1.4"
+
+# Argon2 password hashing library (https://github.com/technion/ruby-argon2)
+gem "argon2", "~> 2.3"
+
+# JSON Web Token (JWT) library [https://github.com/jwt/ruby-jwt]
+gem "jwt", "~> 3.1"
