@@ -9,7 +9,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :created
 
-    assert_match "dancer", response.body
+    assert_match "accessToken", response.body
   end
 
   test "POST /session - with invalid username" do
