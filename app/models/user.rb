@@ -7,8 +7,7 @@ class User < ApplicationRecord
 
   validates :name, presence: true
 
-  validates :phone_number,
-            format: { with: /\A\d{3}-\d{4}-\d{4}\z/, allow_blank: true }
+  validates :phone_number, presence: true
 
   validates :nickname, presence: true
 end
