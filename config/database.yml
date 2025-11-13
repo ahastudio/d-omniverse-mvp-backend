@@ -11,7 +11,13 @@ default: &default
 
 development:
   <<: *default
-  database: storage/development.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
+  port: <%= ENV.fetch("DB_PORT") { 5432 } %>
+  database: <%= ENV.fetch("DB_NAME") { "postgres" } %>
+  username: <%= ENV.fetch("DB_USER") { "postgres" } %>
+  password: <%= ENV.fetch("DB_PASSWORD") { "" } %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -26,7 +32,13 @@ test:
 production:
   primary:
     <<: *default
-    database: storage/production.sqlite3
+    adapter: postgresql
+    encoding: unicode
+    host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
+    port: <%= ENV.fetch("DB_PORT") { 5432 } %>
+    database: <%= ENV.fetch("DB_NAME") { "postgres" } %>
+    username: <%= ENV.fetch("DB_USER") { "postgres" } %>
+    password: <%= ENV.fetch("DB_PASSWORD") { "" } %>
   cache:
     <<: *default
     database: storage/production_cache.sqlite3
