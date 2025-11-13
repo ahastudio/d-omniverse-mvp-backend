@@ -24,13 +24,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_231533) do
   end
 
   create_table "users", id: :string, force: :cascade do |t|
+    t.text "avatar_url"
     t.text "bio"
     t.datetime "created_at", null: false
     t.string "name"
     t.string "nickname"
     t.string "password_digest", null: false
     t.string "phone_number"
-    t.string "photo_url"
     t.datetime "updated_at", null: false
     t.string "username", null: false
     t.index ["username"], name: "index_users_on_username", unique: true

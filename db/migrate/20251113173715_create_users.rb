@@ -11,7 +11,8 @@ class CreateUsers < ActiveRecord::Migration[8.1]
 
       t.string :nickname
       t.text :bio
-      t.string :photo_url
+
+      t.text :avatar_url
 
       t.timestamps
     end

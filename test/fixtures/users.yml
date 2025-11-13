@@ -8,7 +8,7 @@ admin:
   phone_number: "010-1111-2222"
   nickname: Admin
   bio: System administrator
-  photo_url: https://example.com/admin.jpg
+  avatar_url: https://example.com/admin.jpg
 
 dancer:
   id: 01JCS1234567890ABCDEFGHM002
@@ -18,4 +18,4 @@ dancer:
   phone_number: "010-3333-4444"
   nickname: DanceMaster
   bio: Professional dancer
-  photo_url: https://example.com/dancer.jpg
+  avatar_url: https://example.com/dancer.jpg

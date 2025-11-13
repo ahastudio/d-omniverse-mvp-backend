@@ -10,7 +10,7 @@ class UserTest < ActiveSupport::TestCase
       phone_number: "010-5555-6666",
       nickname: "Tester",
       bio: "Test user biography",
-      photo_url: "https://example.com/test.jpg"
+      avatar_url: "https://example.com/test.jpg"
     )
     assert user.persisted?
   end
