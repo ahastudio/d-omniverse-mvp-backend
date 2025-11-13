@@ -10,4 +10,9 @@ class User < ApplicationRecord
   validates :phone_number, presence: true
 
   validates :nickname, presence: true
+
+  def generate_token
+    payload = { sub: id }
+    JWT.encode(payload, Rails.application.secret_key_base)
+  end
 end

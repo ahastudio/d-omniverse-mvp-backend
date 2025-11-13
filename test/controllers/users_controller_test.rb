@@ -13,7 +13,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :created
 
-    assert_match "newuser", response.body
+    assert_match "accessToken", response.body
   end
 
   test "POST /users - with invalid data" do

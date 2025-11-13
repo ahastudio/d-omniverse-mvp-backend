@@ -5,8 +5,7 @@ class UsersController < ApplicationController
     user.nickname = user.name
     user.save!
 
-    render json: { id: user.id, username: user.username },
-           status: :created
+    render json: { accessToken: user.generate_token }, status: :created
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.full_messages },
            status: :unprocessable_entity
