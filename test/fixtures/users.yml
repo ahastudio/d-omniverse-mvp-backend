@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+admin:
+  id: 01JCS1234567890ABCDEFGHM001
+  username: administrator
+  password_digest: <%= Argon2::Password.create('password123').to_s %>
+  name: Administrator
+  phone_number: "010-1111-2222"
+  nickname: Admin
+  bio: System administrator
+  photo_url: https://example.com/admin.jpg
+
+dancer:
+  id: 01JCS1234567890ABCDEFGHM002
+  username: dancer
+  password_digest: <%= Argon2::Password.create('password123').to_s %>
+  name: Dancer
+  phone_number: "010-3333-4444"
+  nickname: DanceMaster
+  bio: Professional dancer
+  photo_url: https://example.com/dancer.jpg
