@@ -62,6 +62,21 @@ VS Code `run_in_terminal` 도구를 **절대** 사용하지 않고 터미널
 - 확신 없으면 추측 금지 → 즉시 사용자 확인
 - 기존 코드/텍스트 임의 변경 금지 → 먼저 확인
 
+### 코드 스타일
+
+- Ruby 코드는 가로 80컬럼 제한
+
+### API 파라미터
+
+- JSON 파라미터는 camelCase로 받음
+- 네임스페이스 없이 직접 받음 (예: `params.permit(:username)`)
+- `transform_keys(&:underscore)`로 snake_case 변환
+
+### 에러 처리
+
+- `if` 조건문 대신 `save!` 사용
+- `rescue`로 예외 처리 (예: `ActiveRecord::RecordInvalid`)
+
 ### 테스트
 
 - 기능 추가/버그 수정 시 테스트 코드 작성 및 실행
