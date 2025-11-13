@@ -1,13 +1,13 @@
 text_only_update:
   id: 01JCSPOST0000000000000001
-  user: admin
+  user_id: 01JCS1234567890ABCDEFGHM001
   content: Text-only announcement for partner launch
   created_at: 2025-01-01 09:15:00 Z
   updated_at: 2025-01-01 09:15:00 Z
 
 admin_update:
   id: 01JCSPOST0000000000000002
-  user: admin
+  user_id: 01JCS1234567890ABCDEFGHM001
   content: Platform maintenance update
   video_url: https://res.cloudinary.com/videoapi-demo/video/upload/c_fill,g_auto,ar_1:2,w_500/v1/samples/boat_crop_dakgqt.mp4
   created_at: 2025-01-10 12:30:00 Z
@@ -15,7 +15,7 @@ admin_update:
 
 dancer_intro:
   id: 01JCSPOST0000000000000003
-  user: dancer
+  user_id: 01JCS1234567890ABCDEFGHM002
   content: Intro choreography preview
   video_url: https://cloudinary-marketing-res.cloudinary.com/video/upload/c_fill,g_auto,ar_1:2,w_500/v1737662630/dynamic-overlays-hero.mp4
   created_at: 2025-01-15 10:00:00 Z

@@ -11,4 +11,6 @@ Rails.application.routes.draw do
   resource :session, only: [ :create ]
 
   resources :users, only: [ :create ]
+
+  resources :posts, only: [ :index ]
 end
