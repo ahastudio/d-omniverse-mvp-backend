@@ -1,6 +1,25 @@
 require "test_helper"
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
+  test "GET /users/:username" do
+    user = users(:admin)
+
+    get user_url(user.username), as: :json
+
+    assert_response :ok
+
+    assert_match user.username, response.body
+    assert_match user.nickname, response.body
+  end
+
+  test "GET /users/:username - not found" do
+    get user_url("nonexistent"), as: :json
+
+    assert_response :not_found
+
+    assert_match "User not found", response.body
+  end
+
   test "POST /users" do
     assert_difference("User.count") do
       post users_url, params: {
