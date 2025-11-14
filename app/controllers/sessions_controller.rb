@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
-  before_action :set_user, only: [:create]
-  before_action :verify_password, only: [:create]
+  before_action :set_user, only: [ :create ]
+  before_action :verify_password, only: [ :create ]
 
   def create
     render json: { accessToken: @user.generate_token },

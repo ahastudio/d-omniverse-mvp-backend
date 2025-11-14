@@ -12,5 +12,5 @@ Rails.application.routes.draw do
 
   resources :users, only: [ :create ]
 
-  resources :posts, only: [ :index ]
+  resources :posts, only: [ :index, :create ]
 end
