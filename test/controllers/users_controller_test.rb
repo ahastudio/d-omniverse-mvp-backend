@@ -47,4 +47,32 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_match "errors", response.body
   end
+
+  test "PATCH /users/:username" do
+    user = users(:admin)
+    token = user.generate_token
+
+    patch user_url(user.username),
+          params: {
+            nickname: "Updated Nickname",
+            bio: "Updated bio"
+          },
+          headers: { "Authorization": "Bearer #{token}" },
+          as: :json
+
+    assert_response :ok
+
+    assert_match "Updated Nickname", response.body
+    assert_match "Updated bio", response.body
+  end
+
+  test "PATCH /users/:username - without authentication" do
+    user = users(:admin)
+
+    patch user_url(user.username),
+          params: { nickname: "Updated" },
+          as: :json
+
+    assert_response :unauthorized
+  end
 end
