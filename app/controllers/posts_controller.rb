@@ -1,4 +1,6 @@
 class PostsController < ApplicationController
+  before_action :login_required, only: [ :create ]
+
   before_action :set_posts, only: [ :index ]
 
   def index

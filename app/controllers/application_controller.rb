@@ -1,5 +1,16 @@
 class ApplicationController < ActionController::API
-  private
+  protected
+
+  def login_required
+    return if logged_in?
+
+    render json: { error: "Authentication required" },
+           status: :unauthorized
+  end
+
+  def logged_in?
+    current_user.present?
+  end
 
   def current_user
     @current_user ||= find_user_from_token
