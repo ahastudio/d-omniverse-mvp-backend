@@ -24,6 +24,7 @@ class PostsController < ApplicationController
 
   def set_posts
     @posts = Post.includes(:user).order(id: :desc)
+    @posts = @posts.where.not(video_url: nil) if params[:type] == "video"
   end
 
   def posts_payload
