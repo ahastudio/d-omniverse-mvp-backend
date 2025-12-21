@@ -14,7 +14,7 @@ class User < ApplicationRecord
   validates :nickname, presence: true
 
   def generate_token
-    payload = { sub: id }
+    payload = { sub: id, username: username }
     JWT.encode(payload, Rails.application.secret_key_base)
   end
 end

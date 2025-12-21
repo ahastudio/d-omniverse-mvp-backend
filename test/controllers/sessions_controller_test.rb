@@ -9,7 +9,17 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :created
 
-    assert_match "accessToken", response.body
+    response_json = JSON.parse(response.body)
+    token = response_json["accessToken"]
+
+    payload = JWT.decode(
+      token,
+      Rails.application.secret_key_base,
+      true,
+      { algorithm: "HS256" }
+    ).first
+
+    assert_equal "dancer", payload["username"]
   end
 
   test "POST /session - with invalid username" do
