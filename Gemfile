@@ -62,3 +62,6 @@ gem "argon2", "~> 2.3"
 
 # JSON Web Token (JWT) library [https://github.com/jwt/ruby-jwt]
 gem "jwt", "~> 3.1"
+
+# MIME type detection library [https://github.com/mime-types/ruby-mime-types]
+gem "mime-types", "~> 3.5"

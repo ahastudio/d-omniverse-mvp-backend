@@ -50,4 +50,33 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Video post", response.body
     assert_match "https://example.com/video.mp4", response.body
   end
+
+  test "POST /posts - with video" do
+    user = users(:dancer)
+    token = user.generate_token
+
+    video_data = File.binread(file_fixture("sample.mp4"))
+    base64_data = Base64.strict_encode64(video_data)
+    data_url = "data:video/mp4;base64,#{base64_data}"
+
+    path = "/videos/hls/TESTKEY/playlist.m3u8"
+    original_process_video = Post.instance_method(:process_video)
+    Post.define_method(:process_video) { self.video_url = path }
+
+    post posts_url,
+         params: {
+           content: "Video with base64",
+           videoUrl: data_url
+         },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :created
+
+    assert_match "Video with base64", response.body
+    assert_match "/videos/hls/TESTKEY/playlist.m3u8", response.body
+    refute_match "data:", response.body
+  ensure
+    Post.define_method(:process_video, original_process_video)
+  end
 end

@@ -31,5 +31,8 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Uploaded videos
+/public/videos
+
 # Tarball files
 *.tar
