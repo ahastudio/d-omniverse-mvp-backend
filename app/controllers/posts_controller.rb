@@ -20,7 +20,7 @@ class PostsController < ApplicationController
            status: :unprocessable_entity
   end
 
-  private
+private
 
   def set_posts
     @posts = Post.includes(:user).order(id: :desc)

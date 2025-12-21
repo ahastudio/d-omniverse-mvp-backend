@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
            status: :created
   end
 
-  private
+private
 
   def session_params
     params.permit(:username, :password)
