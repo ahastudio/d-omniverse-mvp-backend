@@ -44,11 +44,6 @@ Think before you act.**
 
 기술 용어는 영어 병기 가능: `웹소켓(WebSocket)`
 
-## 터미널 사용 금지
-
-VS Code `run_in_terminal` 도구를 **절대** 사용하지 않고 터미널
-명령을 제안하지 않습니다.
-
 ## Git 커밋 메시지
 
 커밋 메시지 요청 시 [`docs/git-commit-guide.md`](docs/git-commit-guide.md)를
