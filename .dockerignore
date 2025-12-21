@@ -43,3 +43,9 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Uploaded videos
+/public/videos
+
+# Tarball files
+*.tar
