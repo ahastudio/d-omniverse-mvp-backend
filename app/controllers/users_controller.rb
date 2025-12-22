@@ -32,7 +32,7 @@ class UsersController < ApplicationController
 private
 
   def set_user
-    @user = User.find_by!(username: params[:username])
+    @user = User.find_by!(username: params[:username].downcase)
   rescue ActiveRecord::RecordNotFound
     render json: { error: "User not found" },
            status: :not_found
