@@ -7,7 +7,14 @@ class User < ApplicationRecord
 
   validates :id, presence: true, uniqueness: true
 
-  validates :username, presence: true, uniqueness: true
+  validates :username,
+            presence: true,
+            uniqueness: true,
+            length: { minimum: 3 },
+            format: {
+              with: /\A[a-z][a-z0-9]*\z/,
+              message: "must start with a letter and contain only letters and numbers"
+            }
 
   validates :name, presence: true
 
