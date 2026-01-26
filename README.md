@@ -1,24 +1,19 @@
-# README
+# D-Omniverse MVP Backend
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Install dependencies
 
-Things you may want to cover:
+```bash
+bundle
+```
 
-* Ruby version
+## Run development server
 
-* System dependencies
+```bash
+bin/rails s
+```
 
-* Configuration
+## Run tests
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+bin/rails test
+```
