@@ -7,8 +7,8 @@
 **Phase 0: 계획 수립**
 - 스레드 기능 요구사항 정의
 - 기존 코드베이스 분석
-- 기술적 의사결정 수행
 - File-based Planning Workflow 문서 작성
+- 스펙 단순화: 인용/리포스트 제외, parent_id만으로 스레드 구현
 
 ### 생성/수정한 파일
 
@@ -40,14 +40,14 @@
 
 2. **다음에 할 일은?**
    - Phase 1: 마이그레이션 파일 생성
-   - parent_id, quoted_post_id, reposted_post_id 컬럼 추가
+   - parent_id, replies_count 컬럼 추가
 
 3. **목표는?**
-   - 트위터 스타일 스레드 기능 (답글/인용/리포스트)
+   - parent_id로 글들을 연결하는 스레드 기능
 
 4. **지금까지 배운 것?**
-   - Post 모델은 ULID 기반 ID, content NOT NULL 제약 있음
-   - 자기 참조 관계로 스레드 구현 예정
+   - Post 모델은 ULID 기반 ID 사용
+   - 스레드는 parent_id 자기 참조로 단순하게 구현
 
 5. **완료한 작업은?**
    - 스펙 문서 4개 파일 작성 완료
