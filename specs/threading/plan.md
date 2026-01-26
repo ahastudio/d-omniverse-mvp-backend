@@ -1,4 +1,4 @@
-# Threading Feature Plan
+# Project: Threading Feature
 
 ## Goal
 
@@ -7,66 +7,61 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 ## Current Phase
 
-⏸️ Phase 1 - 데이터베이스 스키마 확장
+⏸️ Phase 1: Requirements & Discovery
 
 ## Phases
 
-### Phase 1: 데이터베이스 스키마 확장 ⏸️
+### Phase 1: Requirements & Discovery ⏸️
 
-- [ ] 마이그레이션 파일 생성
-- [ ] `parent_id` 컬럼 추가 (string, null: true, index: true)
-- [ ] `replies_count` 컬럼 추가 (카운터 캐시용)
-- [ ] 마이그레이션 실행 및 검증
+- [x] 사용자 요구사항 확인
+- [x] 기존 코드베이스 탐색
+- [x] 제약사항 문서화
 
-### Phase 2: 모델 관계 설정 ⏸️
+### Phase 2: Planning & Structure ⏸️
 
-- [ ] 자기 참조 관계 설정 (parent, replies)
-- [ ] counter_cache 설정
-- [ ] 자기 참조 방지 유효성 검증
+- [ ] 마이그레이션 설계
+- [ ] 모델 관계 설계
+- [ ] API 엔드포인트 설계
+
+### Phase 3: Implementation ⏸️
+
+- [ ] 마이그레이션 파일 생성 (parent_id, replies_count)
+- [ ] Post 모델에 자기 참조 관계 추가
+- [ ] PostsController에 parentId 파라미터 추가
+- [ ] show 액션 추가
+- [ ] replies, thread 액션 추가
+
+### Phase 4: Testing & Verification ⏸️
+
 - [ ] 모델 테스트 작성
-
-### Phase 3: 글 작성 API 확장 ⏸️
-
-- [ ] parentId 파라미터 추가
-- [ ] 부모 글 존재 여부 검증
 - [ ] 컨트롤러 테스트 작성
+- [ ] 테스트 실행 및 결과 확인
 
-### Phase 4: 글 조회 API 확장 ⏸️
+### Phase 5: Delivery ⏸️
 
-- [ ] `show` 액션 추가
-- [ ] 응답에 parentId, replyCount 포함
-- [ ] 라우트 설정
-- [ ] 컨트롤러 테스트 작성
-
-### Phase 5: 스레드 전용 API ⏸️
-
-- [ ] `GET /posts/:id/replies` 구현
-- [ ] `GET /posts/:id/thread` 구현 (ancestors + replies)
-- [ ] 페이지네이션 지원
-- [ ] 컨트롤러 테스트 작성
+- [ ] 최종 리뷰
+- [ ] PR 생성
 
 ## Key Questions
 
-| 질문 | 답변 |
-|------|------|
-| 부모 글 삭제 시 처리? | Nullify (자식 글이 루트가 됨) |
-| 스레드 깊이 제한? | 100단계 |
+1. 부모 글 삭제 시 자식 글 처리 방법?
+2. 스레드 깊이 제한 필요 여부?
 
 ## Decisions Made
 
-| 결정 사항 | 선택 | 이유 |
-|-----------|------|------|
-| 관계 구현 방식 | 자기 참조 (parent_id) | 단순하고 직관적 |
-| 삭제 정책 | Nullify | 자식 글 보존 |
-| 카운터 | counter_cache | 조회 성능 |
+| Decision                | Rationale              |
+| ----------------------- | ---------------------- |
+| parent_id 자기 참조     | 단순하고 직관적        |
+| Nullify 삭제 정책       | 자식 글 보존           |
+| counter_cache 사용      | 조회 성능 최적화       |
 
 ## Errors Encountered
 
-| 날짜 | 오류 | 해결책 |
-|------|------|--------|
-| - | - | - |
+| Error   | Attempt | Resolution |
+| ------- | ------- | ---------- |
+| -       | -       | -          |
 
 ## Notes
 
-- 기존 데이터에는 영향 없음 (parent_id는 NULL 허용)
 - 인용/리포스트는 범위에서 제외됨
+- 기존 데이터에는 영향 없음 (parent_id는 NULL 허용)

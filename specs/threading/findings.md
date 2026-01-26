@@ -1,4 +1,6 @@
-# Threading Feature Findings
+# Findings & Decisions
+
+> **기술적 발견, 중요한 결정이 있을 때마다 이 파일을 즉시 업데이트하세요.**
 
 ## Requirements
 
@@ -9,10 +11,23 @@
 
 ## Research Findings
 
-### 현재 Post 모델 구조
+### 코드베이스 구조
+
+- 백엔드: Rails 8.1 API 모드
+- DB: PostgreSQL (개발), SQLite3 (테스트)
+- ID: ULID 기반 문자열
+- 인증: JWT + Argon2
+
+### 기존 패턴
+
+- 모델: `app/models/` 디렉토리
+- 컨트롤러: `app/controllers/` 디렉토리
+- 라우트: `config/routes.rb`
+- 마이그레이션: `db/migrate/`
+
+### Post 모델 현황
 
 ```ruby
-# app/models/post.rb
 class Post < ApplicationRecord
   include VideoProcessable
   video_attribute :video_url
@@ -21,10 +36,9 @@ class Post < ApplicationRecord
 end
 ```
 
-### 현재 Posts 테이블 스키마
+### Posts 테이블 스키마
 
 ```ruby
-# db/migrate/20251113231533_create_posts.rb
 create_table :posts, id: false do |t|
   t.string :id, null: false, primary_key: true  # ULID
   t.string :user_id, null: false, index: true
@@ -34,24 +48,13 @@ create_table :posts, id: false do |t|
 end
 ```
 
-### 현재 PostsController 액션
-
-- `index`: 글 목록 조회 (type=video 필터 지원)
-- `create`: 글 작성 (인증 필요)
-
-### 현재 라우트
-
-```ruby
-resources :posts, only: [ :index, :create ]
-```
-
 ## Technical Decisions
 
-| 항목 | 선택 | 대안 | 선택 이유 |
-|------|------|------|-----------|
-| 관계 모델링 | parent_id 자기 참조 | 별도 테이블 | 단순하고 직관적 |
-| 삭제 처리 | Nullify | Cascade | 자식 글 보존 |
-| 성능 최적화 | counter_cache | 매번 COUNT | 조회 성능 |
+| Decision                | Rationale              |
+| ----------------------- | ---------------------- |
+| parent_id 자기 참조     | 단순하고 직관적        |
+| Nullify 삭제 정책       | 자식 글 보존           |
+| counter_cache 사용      | 조회 성능 최적화       |
 
 ## Issues Encountered
 
@@ -59,15 +62,23 @@ resources :posts, only: [ :index, :create ]
 
 ## Resources
 
-- `app/models/post.rb` - Post 모델
-- `app/controllers/posts_controller.rb` - Posts 컨트롤러
-- `db/migrate/20251113231533_create_posts.rb` - Posts 마이그레이션
-- `config/routes.rb` - 라우트 설정
+### 코드 참조
+
+- Post 모델: `app/models/post.rb`
+- Posts 컨트롤러: `app/controllers/posts_controller.rb`
+- 마이그레이션: `db/migrate/20251113231533_create_posts.rb`
+- 라우트: `config/routes.rb`
+
+### API 엔드포인트
+
+- GET `/posts` - 글 목록 조회
+- POST `/posts` - 글 작성
 
 ## Learnings
 
-### 2026-01-26
+### 코드베이스 분석 (2026-01-26)
 
-- 프로젝트는 Rails 8.1 API 모드, PostgreSQL, ULID 기반 ID 사용
-- Post는 User와 belongs_to 관계
-- 스레드는 parent_id 하나로 단순하게 구현 (인용/리포스트 제외)
+- Post는 ULID 기반 문자열 ID 사용
+- User와 belongs_to 관계
+- content는 현재 NOT NULL 제약
+- VideoProcessable concern으로 동영상 처리
