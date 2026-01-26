@@ -36,3 +36,6 @@
 
 # Tarball files
 *.tar
+
+# Claude Code
+.claude/settings.local.json
