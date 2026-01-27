@@ -53,7 +53,7 @@ end
 | Decision                | Rationale              |
 | ----------------------- | ---------------------- |
 | parent_id 자기 참조     | 단순하고 직관적        |
-| Nullify 삭제 정책       | 자식 글 보존           |
+| Soft Delete             | 스레드 구조 유지       |
 | counter_cache 사용      | 조회 성능 최적화       |
 
 ## Issues Encountered

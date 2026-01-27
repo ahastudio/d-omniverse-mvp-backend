@@ -130,9 +130,8 @@ GET /posts/:id/thread
 
 ## 삭제 정책
 
-부모 글이 삭제된 경우:
-
-- **Nullify 방식**: 자식 글의 parent_id를 NULL로 변경 (루트 글이 됨)
+- **Soft Delete**: deleted_at 컬럼으로 삭제 여부 표시
+- 삭제된 글은 "삭제된 글입니다"로 표시되고 스레드 구조는 유지됨
 
 ## 성능 고려사항
 
