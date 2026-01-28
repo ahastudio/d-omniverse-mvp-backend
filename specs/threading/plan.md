@@ -7,34 +7,34 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 ## Current Phase
 
-⏸️ Phase 1: Requirements & Discovery
+✅ Phase 4: Testing & Verification
 
 ## Phases
 
-### Phase 1: Requirements & Discovery ⏸️
+### Phase 1: Requirements & Discovery ✅
 
 - [x] 사용자 요구사항 확인
 - [x] 기존 코드베이스 탐색
 - [x] 제약사항 문서화
 
-### Phase 2: Planning & Structure ⏸️
+### Phase 2: Planning & Structure ✅
 
-- [ ] 마이그레이션 설계
-- [ ] 모델 관계 설계
-- [ ] API 엔드포인트 설계
+- [x] 마이그레이션 설계
+- [x] 모델 관계 설계
+- [x] API 엔드포인트 설계
 
-### Phase 3: Implementation ⏸️
+### Phase 3: Implementation ✅
 
-- [ ] 마이그레이션 파일 생성 (parent_id, replies_count)
-- [ ] Post 모델에 자기 참조 관계 추가
-- [ ] PostsController에 parentId 파라미터 추가
-- [ ] show 액션 추가
-- [ ] replies, thread 액션 추가
+- [x] 마이그레이션 파일 생성 (parent_id, replies_count, deleted_at)
+- [x] Post 모델에 자기 참조 관계 추가
+- [x] PostsController에 parentId 파라미터 추가
+- [x] show 액션 추가
+- [x] replies, thread 액션 추가
 
-### Phase 4: Testing & Verification ⏸️
+### Phase 4: Testing & Verification ✅
 
-- [ ] 모델 테스트 작성
-- [ ] 컨트롤러 테스트 작성
+- [x] 모델 테스트 작성
+- [x] 컨트롤러 테스트 작성
 - [ ] 테스트 실행 및 결과 확인
 
 ### Phase 5: Delivery ⏸️
@@ -44,8 +44,8 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 ## Key Questions
 
-1. 부모 글 삭제 시 자식 글 처리 방법?
-2. 스레드 깊이 제한 필요 여부?
+1. 부모 글 삭제 시 자식 글 처리 방법? → Soft Delete로 스레드 구조 유지
+2. 스레드 깊이 제한 필요 여부? → 현재는 제한 없음, 필요 시 추가
 
 ## Decisions Made
 
@@ -57,9 +57,9 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 ## Errors Encountered
 
-| Error   | Attempt | Resolution |
-| ------- | ------- | ---------- |
-| -       | -       | -          |
+| Error              | Attempt | Resolution             |
+| ------------------ | ------- | ---------------------- |
+| bundle install 실패 | 1       | 마이그레이션 파일 직접 생성 |
 
 ## Notes
 

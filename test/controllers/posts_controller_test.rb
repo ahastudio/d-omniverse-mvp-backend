@@ -146,26 +146,45 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     Post.define_method(:process_video, original_process_video)
   end
 
+  test "POST /posts - with parentId" do
+    user = users(:admin)
+    token = user.generate_token
+    parent = posts(:parent_post)
+
+    post posts_url,
+         params: {
+           content: "Reply content",
+           parentId: parent.id
+         },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :created
+
+    json = JSON.parse(response.body)
+    assert_equal parent.id, json["parentId"]
+  end
+
   test "DELETE /posts/:id" do
     user = users(:admin)
     token = user.generate_token
-    post = posts(:text_only_update)
+    target = posts(:text_only_update)
 
-    delete post_url(post),
+    delete post_url(target),
            headers: { "Authorization": "Bearer #{token}" },
            as: :json
 
     assert_response :no_content
 
-    assert_not_nil post.reload.deleted_at
+    assert_not_nil target.reload.deleted_at
   end
 
   test "DELETE /posts/:id - forbidden" do
     user = users(:dancer)
     token = user.generate_token
-    post = posts(:text_only_update)
+    target = posts(:text_only_update)
 
-    delete post_url(post),
+    delete post_url(target),
            headers: { "Authorization": "Bearer #{token}" },
            as: :json
 
@@ -173,11 +192,56 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "DELETE /posts/:id - unauthorized" do
-    post = posts(:text_only_update)
+    target = posts(:text_only_update)
 
-    delete post_url(post), as: :json
+    delete post_url(target), as: :json
 
     assert_response :unauthorized
+  end
+
+  test "GET /posts/:id" do
+    target = posts(:text_only_update)
+
+    get post_url(target), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal target.id, json["id"]
+    assert_equal target.content, json["content"]
+  end
+
+  test "GET /posts/:id/replies" do
+    parent = posts(:parent_post)
+
+    get replies_post_url(parent), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json.length
+    assert_equal posts(:child_post).id, json.first["id"]
+  end
+
+  test "GET /posts/:id/thread" do
+    child = posts(:child_post)
+
+    get thread_post_url(child), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json["ancestors"].length
+    assert_equal posts(:parent_post).id, json["ancestors"].first["id"]
+    assert_equal child.id, json["post"]["id"]
+  end
+
+  test "GET /posts excludes deleted posts" do
+    get posts_url, as: :json
+
+    assert_response :ok
+
+    refute_match posts(:deleted_post).id, response.body
   end
 
   test "GET /posts - authenticated user - recommended order" do
@@ -197,11 +261,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_operator posts_data.length, :>, 0, "피드에 게시물이 있어야 함"
 
     # 게시물 정보 추출
-    feed = posts_data.map do |post|
+    feed = posts_data.map do |p|
       {
-        id: post["id"],
-        author: post["user"]["username"],
-        is_self: post["user"]["id"] == user.id
+        id: p["id"],
+        author: p["user"]["username"],
+        is_self: p["user"]["id"] == user.id
       }
     end
 
@@ -284,7 +348,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     data = JSON.parse(response.body)
-    post_ids = data["posts"].map { |post| post["id"] }
+    post_ids = data["posts"].map { |p| p["id"] }
 
     # 같은 rank(1)의 게시물 비교: creator_post2 vs admin_update
     # dancer → creator: 10점 직접 관계

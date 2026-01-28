@@ -4,8 +4,18 @@ class Post < ApplicationRecord
   video_attribute :video_url
 
   belongs_to :user
+  belongs_to :parent,
+             class_name: "Post",
+             optional: true,
+             counter_cache: :replies_count
+
+  has_many :replies,
+           class_name: "Post",
+           foreign_key: :parent_id,
+           dependent: :nullify
 
   scope :visible, -> { where(deleted_at: nil) }
+  scope :not_deleted, -> { where(deleted_at: nil) }
 
   scope :feed_ordered_for, ->(user) {
     return order(id: :desc) unless user
@@ -57,10 +67,28 @@ class Post < ApplicationRecord
   }
 
   validates :content, presence: true
-  validate :prevent_duplicate_recent_post
 
-  def destroy!
+  validate :prevent_duplicate_recent_post
+  validate :cannot_be_own_parent
+
+  def deleted?
+    deleted_at.present?
+  end
+
+  def soft_delete!
     update!(deleted_at: Time.current)
+  end
+
+  def ancestors
+    result = []
+    current = parent
+
+    while current
+      result.unshift(current)
+      current = current.parent
+    end
+
+    result
   end
 
 private
@@ -74,8 +102,15 @@ private
       .where.not(id: id)
       .exists?
 
-    if duplicate
-      errors.add(:base, "Duplicate post detected")
-    end
+    return unless duplicate
+
+    errors.add(:base, "Duplicate post detected")
+  end
+
+  def cannot_be_own_parent
+    return if parent_id.blank?
+    return unless parent_id == id
+
+    errors.add(:parent_id, "cannot be self")
   end
 end
