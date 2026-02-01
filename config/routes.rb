@@ -10,6 +10,9 @@ Rails.application.routes.draw do
 
   resource :session, only: [ :create ]
 
+  resources :username_seats, only: [ :show ], param: :username,
+             path: "username-seats"
+
   resources :users, only: [ :create, :show, :update ], param: :username
 
   resources :posts, only: [ :index, :create ]
