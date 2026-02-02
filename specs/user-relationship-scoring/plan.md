@@ -1,8 +1,5 @@
 # Project: 사용자 관계 점수
 
-**Branch**: `claude/user-relationship-scoring-GnbKU` | **Date**: 2026-02-02 |
-**Spec**: [spec.md](./spec.md)
-
 ## Summary
 
 사용자 간 interaction(프로필 방문, 반응, 게시물 보기)을 점수로 기록하여

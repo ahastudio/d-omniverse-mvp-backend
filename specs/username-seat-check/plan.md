@@ -1,8 +1,5 @@
 # Project: Username 중복 검사
 
-**Branch**: `username-seat-check` | **Date**: 2026-01-28 |
-**Spec**: [spec.md](./spec.md)
-
 ## Summary
 
 사용자가 원하는 username의 사용 가능 여부를 확인할 수 있는 공개 API
