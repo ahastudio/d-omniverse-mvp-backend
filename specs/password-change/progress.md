@@ -2,7 +2,7 @@
 
 > **각 단계를 완료하거나 문제가 발생하면 업데이트하세요.**
 
-## Session 2026-02-02
+## Session
 
 ### Phase 1: Requirements & Discovery ✅
 

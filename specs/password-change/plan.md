@@ -1,8 +1,5 @@
 # Project: 패스워드 변경
 
-**Branch**: `claude/password-change-feature-VnbNr` | **Date**: 2026-02-02 |
-**Spec**: [spec.md](./spec.md)
-
 ## Summary
 
 로그인한 사용자가 기존 패스워드를 확인한 후 새 패스워드로 변경할 수 있는

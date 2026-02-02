@@ -76,7 +76,7 @@
 
 ## Learnings
 
-### 2026-02-02: 기존 코드 분석
+### 기존 코드 분석
 
 - Authenticatable concern에 패스워드 검증/해싱 로직 존재
 - `authenticate(password)` 메서드로 기존 패스워드 검증 가능
