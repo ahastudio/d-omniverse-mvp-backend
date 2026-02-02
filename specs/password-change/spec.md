@@ -1,5 +1,77 @@
 # 패스워드 변경
 
+## API Specification (OpenAPI)
+
+```yaml
+paths:
+  /users/{username}/password:
+    patch:
+      summary: 패스워드 변경
+      description: 로그인한 사용자가 기존 패스워드를 확인한 후 새 패스워드로 변경
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: 패스워드 변경 성공
+        '401':
+          description: 인증 필요
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 권한 없음 (타인 패스워드)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 사용자 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 검증 실패 (잘못된 기존 패스워드 또는 빈 새 패스워드)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+```
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Password Change (Priority: P1)
