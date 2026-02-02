@@ -1,5 +1,104 @@
 # 사용자 관계 점수
 
+## OpenAPI Spec
+
+```yaml
+openapi: 3.0.3
+info:
+  title: User Relationship Scoring API
+  version: 1.0.0
+
+paths:
+  /user-relationships:
+    post:
+      summary: 관계 점수 기록
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - targetUserId
+                - type
+              properties:
+                targetUserId:
+                  type: string
+                  description: 대상 사용자 ID (ULID)
+                type:
+                  type: string
+                  enum: [profile_view, reaction, post_view]
+                  description: interaction 유형
+      responses:
+        '201':
+          description: 점수 기록 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRelationship'
+        '401':
+          description: 인증 실패
+        '404':
+          description: 대상 사용자 없음
+        '422':
+          description: 유효하지 않은 요청 (자기 자신, 잘못된 type)
+
+  /user-relationships/{id}:
+    get:
+      summary: 관계 점수 조회
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 대상 사용자 ID (ULID)
+      responses:
+        '200':
+          description: 점수 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score:
+                    type: integer
+        '401':
+          description: 인증 실패
+        '404':
+          description: 대상 사용자 없음
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserRelationship:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        targetUserId:
+          type: string
+        score:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+```
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Profile Visit Scoring (Priority: P1)
