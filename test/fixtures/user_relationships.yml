@@ -1,0 +1,8 @@
+# Read about fixtures at
+# https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+admin_to_dancer:
+  id: 01JCS1234567890ABCDEFREL01
+  user_id: 01JCS1234567890ABCDEFGHM001
+  target_user_id: 01JCS1234567890ABCDEFGHM002
+  score: 5
