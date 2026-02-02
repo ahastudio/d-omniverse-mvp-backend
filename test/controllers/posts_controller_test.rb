@@ -79,4 +79,38 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   ensure
     Post.define_method(:process_video, original_process_video)
   end
+
+  test "DELETE /posts/:id" do
+    user = users(:admin)
+    token = user.generate_token
+    post = posts(:text_only_update)
+
+    delete post_url(post),
+           headers: { "Authorization": "Bearer #{token}" },
+           as: :json
+
+    assert_response :no_content
+
+    assert_not_nil post.reload.deleted_at
+  end
+
+  test "DELETE /posts/:id - forbidden" do
+    user = users(:dancer)
+    token = user.generate_token
+    post = posts(:text_only_update)
+
+    delete post_url(post),
+           headers: { "Authorization": "Bearer #{token}" },
+           as: :json
+
+    assert_response :forbidden
+  end
+
+  test "DELETE /posts/:id - unauthorized" do
+    post = posts(:text_only_update)
+
+    delete post_url(post), as: :json
+
+    assert_response :unauthorized
+  end
 end

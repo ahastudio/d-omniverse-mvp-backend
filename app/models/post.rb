@@ -5,5 +5,11 @@ class Post < ApplicationRecord
 
   belongs_to :user
 
+  default_scope { where(deleted_at: nil) }
+
   validates :content, presence: true
+
+  def destroy!
+    update!(deleted_at: Time.current)
+  end
 end

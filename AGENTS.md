@@ -85,6 +85,11 @@ Think before you act.**
 - `if` 조건문 대신 `save!` 사용
 - `rescue`로 예외 처리 (예: `ActiveRecord::RecordInvalid`)
 
+### 삭제 처리
+
+- Soft delete 사용 (`deleted_at` 컬럼)
+- 권한 검사는 `before_action`으로 분리
+
 ### 테스트
 
 - 기능 추가/버그 수정 시 테스트 코드 작성 및 실행

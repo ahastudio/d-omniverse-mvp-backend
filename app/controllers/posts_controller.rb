@@ -1,7 +1,9 @@
 class PostsController < ApplicationController
-  before_action :login_required, only: [ :create ]
+  before_action :login_required, only: [ :create, :destroy ]
 
   before_action :set_posts, only: [ :index ]
+  before_action :set_post, only: [ :destroy ]
+  before_action :authorize_post!, only: [ :destroy ]
 
   def index
     render json: posts_payload,
@@ -20,7 +22,23 @@ class PostsController < ApplicationController
            status: :unprocessable_entity
   end
 
+  def destroy
+    @post.destroy!
+
+    head :no_content
+  end
+
 private
+
+  def set_post
+    @post = Post.find(params[:id])
+  end
+
+  def authorize_post!
+    return if @post.user_id == current_user.id
+
+    render json: { error: "Forbidden" }, status: :forbidden
+  end
 
   def set_posts
     @posts = Post.includes(:user).order(id: :desc)
