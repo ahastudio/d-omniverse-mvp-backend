@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_000258) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_100000) do
   create_table "posts", id: :string, force: :cascade do |t|
     t.string "content", null: false
     t.datetime "created_at", null: false
@@ -22,6 +19,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_000258) do
     t.string "user_id", null: false
     t.text "video_url"
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "user_relationships", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "score", default: 0, null: false
+    t.string "target_user_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", null: false
+    t.index ["target_user_id"], name: "index_user_relationships_on_target_user_id"
+    t.index ["user_id", "target_user_id"], name: "index_user_relationships_on_user_id_and_target_user_id", unique: true
   end
 
   create_table "users", id: :string, force: :cascade do |t|
