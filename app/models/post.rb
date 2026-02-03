@@ -15,7 +15,6 @@ class Post < ApplicationRecord
            dependent: :nullify
 
   scope :visible, -> { where(deleted_at: nil) }
-  scope :not_deleted, -> { where(deleted_at: nil) }
 
   scope :feed_ordered_for, ->(user) {
     return order(id: :desc) unless user
@@ -70,6 +69,9 @@ class Post < ApplicationRecord
 
   validate :prevent_duplicate_recent_post
   validate :cannot_be_own_parent
+  validate :parent_must_exist
+
+  before_save :set_depth
 
   def deleted?
     deleted_at.present?
@@ -91,7 +93,15 @@ class Post < ApplicationRecord
     result
   end
 
+  def ancestors_count
+    ancestors.size
+  end
+
 private
+
+  def set_depth
+    self.depth = parent ? parent.depth + 1 : 0
+  end
 
   def prevent_duplicate_recent_post
     return if user_id.blank? || content.blank?
@@ -112,5 +122,12 @@ private
     return unless parent_id == id
 
     errors.add(:parent_id, "cannot be self")
+  end
+
+  def parent_must_exist
+    return if parent_id.blank?
+    return if Post.exists?(parent_id)
+
+    errors.add(:parent_id, "does not exist")
   end
 end

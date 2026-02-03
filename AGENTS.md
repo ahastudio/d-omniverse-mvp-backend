@@ -74,6 +74,10 @@ before you act.**
 - 스펙 승인 후 plan.md, findings.md, progress.md 작성/업데이트 (3-File Pattern)
 - 사용자가 plan 등을 검토하고 승인한 후에만 구현 시작
 - 구현 순서: spec.md 검토 → 3-File Pattern 검토 → 구현
+- plan.md 작성 시: AI가 자율적으로 완료 가능한 항목만 포함 (PR 생성, 최종 리뷰,
+  사용자 승인, 외부 시스템 접근 등 AI가 혼자 못 하는 항목 제외)
+- 사용자 승인이 필요한 단계는 ⏸️ 이모지로 표시하고, 해당 단계 도달 시 사용자가
+  명시적으로 승인할 때까지 **절대** 다음 단계로 진행 금지 (승인 요청 반복)
 - 템플릿:
   <https://github.com/ahastudio/til/blob/main/ai/file-based-planning-workflow.md>
 
@@ -167,6 +171,12 @@ before you act.**
 
 - Soft delete 사용 (`deleted_at` 컬럼)
 - 권한 검사는 `before_action`으로 분리
+
+### DB 마이그레이션
+
+- 테스트 환경 먼저: `bin/rails db:migrate RAILS_ENV=test`
+- 그 다음 개발 환경: `bin/rails db:migrate` (schema.rb가 PostgreSQL 기준으로 생성됨)
+- 두 환경 모두 순차적으로 실행해야 함 (하나만 실행하면 안 됨)
 
 ### 테스트
 

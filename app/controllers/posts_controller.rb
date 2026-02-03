@@ -32,7 +32,7 @@ class PostsController < ApplicationController
   end
 
   def replies
-    @replies = @post.replies.not_deleted.includes(:user).order(id: :asc)
+    @replies = @post.replies.visible.includes(:user).order(id: :asc)
 
     render json: @replies.map { |post| post_payload(post) }
   end
@@ -41,7 +41,7 @@ class PostsController < ApplicationController
     render json: {
       ancestors: @post.ancestors.map { |post| post_payload(post) },
       post: post_payload(@post),
-      replies: @post.replies.not_deleted.includes(:user).order(id: :asc)
+      replies: @post.replies.visible.includes(:user).order(id: :asc)
                     .map { |post| post_payload(post) }
     }
   end
@@ -104,10 +104,23 @@ private
       content: post.content,
       videoUrl: post.video_url,
       parentId: post.parent_id,
+      parent: parent_payload(post.parent),
+      depth: post.depth,
       repliesCount: post.replies_count,
       createdAt: post.created_at&.iso8601,
       updatedAt: post.updated_at&.iso8601
     }
+  end
+
+  def parent_payload(parent)
+    return nil unless parent
+
+    {
+      id: parent.id,
+      content: parent.deleted? ? nil : parent.content,
+      deleted: parent.deleted? || nil,
+      parentId: parent.parent_id
+    }.compact
   end
 
   def deleted_post_payload(post)

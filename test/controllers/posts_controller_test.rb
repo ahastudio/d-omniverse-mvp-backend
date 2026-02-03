@@ -165,6 +165,24 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal parent.id, json["parentId"]
   end
 
+  test "POST /posts - with invalid parentId" do
+    user = users(:admin)
+    token = user.generate_token
+
+    post posts_url,
+         params: {
+           content: "Reply to non-existent post",
+           parentId: "01NONEXISTENT00000000000"
+         },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :unprocessable_entity
+
+    json = JSON.parse(response.body)
+    assert_includes json["errors"], "Parent does not exist"
+  end
+
   test "DELETE /posts/:id" do
     user = users(:admin)
     token = user.generate_token
@@ -234,6 +252,33 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, json["ancestors"].length
     assert_equal posts(:parent_post).id, json["ancestors"].first["id"]
     assert_equal child.id, json["post"]["id"]
+  end
+
+  test "GET /posts/:id - includes parent and depth" do
+    child = posts(:child_post)
+    parent = posts(:parent_post)
+
+    get post_url(child), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json["depth"]
+    assert_not_nil json["parent"]
+    assert_equal parent.id, json["parent"]["id"]
+    assert_equal parent.content, json["parent"]["content"]
+  end
+
+  test "GET /posts/:id - root post has no parent" do
+    parent = posts(:parent_post)
+
+    get post_url(parent), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 0, json["depth"]
+    assert_nil json["parent"]
   end
 
   test "GET /posts excludes deleted posts" do

@@ -7,7 +7,7 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 ## Current Phase
 
-✅ Phase 4: Testing & Verification
+✅ 완료
 
 ## Phases
 
@@ -35,12 +35,20 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 - [x] 모델 테스트 작성
 - [x] 컨트롤러 테스트 작성
-- [ ] 테스트 실행 및 결과 확인
 
-### Phase 5: Delivery ⏸️
+### Phase 5: Enhancement ✅
 
-- [ ] 최종 리뷰
-- [ ] PR 생성
+- [x] spec.md에 OpenAPI 스펙 추가
+- [x] parent 객체 임베드
+- [x] ancestorsCount → depth 용어 변경
+
+### Phase 6: depth 컬럼 추가 ✅
+
+- [x] 마이그레이션 파일 생성 (depth 컬럼)
+- [x] Post 모델에 before_save 콜백 추가 (depth 자동 계산)
+- [x] 컨트롤러 수정 (ancestorsCount → depth)
+- [x] 테스트 수정
+- [x] Fixture 수정 (child_post에 depth 추가)
 
 ## Key Questions
 

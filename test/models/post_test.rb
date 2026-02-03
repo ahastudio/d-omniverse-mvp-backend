@@ -59,6 +59,28 @@ class PostTest < ActiveSupport::TestCase
     assert_includes post.errors[:parent_id], "cannot be self"
   end
 
+  test "parent must exist" do
+    post = Post.new(
+      user: users(:admin),
+      content: "Reply to non-existent post",
+      parent_id: "01NONEXISTENT00000000000"
+    )
+
+    assert_not post.valid?
+    assert_includes post.errors[:parent_id], "does not exist"
+  end
+
+  test "can reply to soft-deleted parent" do
+    deleted_parent = posts(:deleted_post)
+    post = Post.new(
+      user: users(:admin),
+      content: "Reply to deleted post",
+      parent_id: deleted_parent.id
+    )
+
+    assert post.valid?
+  end
+
   test "soft delete" do
     post = posts(:text_only_update)
 
@@ -85,8 +107,8 @@ class PostTest < ActiveSupport::TestCase
     assert_includes parent.replies, child
   end
 
-  test "not_deleted scope excludes deleted posts" do
-    assert_includes Post.not_deleted, posts(:text_only_update)
-    assert_not_includes Post.not_deleted, posts(:deleted_post)
+  test "visible scope excludes deleted posts" do
+    assert_includes Post.visible, posts(:text_only_update)
+    assert_not_includes Post.visible, posts(:deleted_post)
   end
 end
