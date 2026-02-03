@@ -119,7 +119,7 @@ private
   def parent_payload(parent)
     return nil unless parent
 
-    {
+    payload = {
       id: parent.id,
       user: {
         id: parent.user.id,
@@ -129,13 +129,14 @@ private
       },
       content: parent.deleted? ? nil : parent.content,
       videoUrl: parent.video_url,
-      deleted: parent.deleted? || nil,
       parentId: parent.parent_id,
       depth: parent.depth,
       repliesCount: parent.replies_count,
       createdAt: parent.created_at&.iso8601,
       updatedAt: parent.updated_at&.iso8601
-    }.compact
+    }
+    payload[:deleted] = true if parent.deleted?
+    payload
   end
 
   def deleted_post_payload(post)
