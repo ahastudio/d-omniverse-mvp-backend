@@ -51,7 +51,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Load environment variables from .env (https://github.com/bkeepers/dotenv)
-  gem "dotenv-rails", "~> 3.1"
+  gem "dotenv-rails", "~> 3.2"
 end
 
 # Universally Unique Lexicographically Sortable Identifier generator (https://github.com/rafaelfranca/ulid)
