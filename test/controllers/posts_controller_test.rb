@@ -1,13 +1,20 @@
 require "test_helper"
 
 class PostsControllerTest < ActionDispatch::IntegrationTest
-  test "GET /posts" do
+  test "GET /posts - response format" do
     get posts_url, as: :json
 
     assert_response :ok
 
-    assert_match posts(:text_only_update).id, response.body
-    assert_match posts(:text_only_update).content, response.body
+    data = JSON.parse(response.body)
+
+    # 새로운 응답 형식 확인
+    assert data.key?("posts"), "posts 키가 있어야 함"
+    assert data.key?("nextCursor"), "nextCursor 키가 있어야 함"
+
+    # posts 배열에 게시물 포함
+    post_ids = data["posts"].map { |p| p["id"] }
+    assert_includes post_ids, posts(:text_only_update).id
   end
 
   test "GET /posts?type=video" do
@@ -15,8 +22,47 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
 
-    assert_match posts(:admin_update).id, response.body
-    refute_match posts(:text_only_update).id, response.body
+    data = JSON.parse(response.body)
+    post_ids = data["posts"].map { |p| p["id"] }
+
+    assert_includes post_ids, posts(:admin_update).id
+    refute_includes post_ids, posts(:text_only_update).id
+  end
+
+  test "GET /posts - pagination with limit" do
+    get posts_url(limit: 3), as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+
+    assert_equal 3, data["posts"].length, "limit=3이면 3개 반환"
+    assert_not_nil data["nextCursor"], "더 있으면 nextCursor 존재"
+  end
+
+  test "GET /posts - pagination with cursor" do
+    # 첫 페이지
+    get posts_url(limit: 2), as: :json
+    first_page = JSON.parse(response.body)
+    first_page_ids = first_page["posts"].map { |p| p["id"] }
+    cursor = first_page["nextCursor"]
+
+    # 두 번째 페이지
+    get posts_url(limit: 2, cursor: cursor), as: :json
+    second_page = JSON.parse(response.body)
+    second_page_ids = second_page["posts"].map { |p| p["id"] }
+
+    # 중복 없어야 함
+    assert_empty(first_page_ids & second_page_ids, "페이지 간 중복 없어야 함")
+  end
+
+  test "GET /posts - last page has no cursor" do
+    # 매우 큰 limit으로 전체 가져오기
+    get posts_url(limit: 1000), as: :json
+
+    data = JSON.parse(response.body)
+
+    assert_nil data["nextCursor"], "마지막 페이지면 nextCursor=null"
   end
 
   test "POST /posts" do
@@ -138,19 +184,20 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     user = users(:admin)
     token = user.generate_token
 
-    get posts_url,
+    get posts_url(limit: 100),
         headers: { "Authorization": "Bearer #{token}" },
         as: :json
 
     assert_response :ok
 
     data = JSON.parse(response.body)
+    posts_data = data["posts"]
 
     # 전체 피드 확인
-    assert_operator data.length, :>, 0, "피드에 게시물이 있어야 함"
+    assert_operator posts_data.length, :>, 0, "피드에 게시물이 있어야 함"
 
     # 게시물 정보 추출
-    feed = data.map do |post|
+    feed = posts_data.map do |post|
       {
         id: post["id"],
         author: post["user"]["username"],
@@ -166,7 +213,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     # 2. 작성자 다양성: 같은 작성자 3번 이상 연속 금지
     consecutive_count = 1
     max_consecutive = 1
-    user_ids = data.map { |p| p["user"]["id"] }
+    user_ids = posts_data.map { |p| p["user"]["id"] }
 
     user_ids.each_cons(2) do |prev, curr|
       if prev == curr
@@ -192,23 +239,24 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     user = users(:admin)
     token = user.generate_token
 
-    get posts_url,
+    get posts_url(limit: 100),
         headers: { "Authorization": "Bearer #{token}" },
         as: :json
 
     assert_response :ok
 
     data = JSON.parse(response.body)
+    posts_data = data["posts"]
 
     # 본인 최신 글이 최상단
-    assert_equal user.id, data[0]["user"]["id"], "본인 최신 글 최상단"
-    assert_equal posts(:admin_update).id, data[0]["id"]
+    assert_equal user.id, posts_data[0]["user"]["id"], "본인 최신 글 최상단"
+    assert_equal posts(:admin_update).id, posts_data[0]["id"]
 
     # 작성자 다양성: 같은 작성자 3번 이상 연속으로 나오면 안 됨
     consecutive_count = 1
     max_consecutive = 1
 
-    data.map { |p| p["user"]["id"] }.each_cons(2) do |prev, curr|
+    posts_data.map { |p| p["user"]["id"] }.each_cons(2) do |prev, curr|
       if prev == curr
         consecutive_count += 1
         max_consecutive = [ max_consecutive, consecutive_count ].max
@@ -229,14 +277,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     user = users(:dancer)
     token = user.generate_token
 
-    get posts_url,
+    get posts_url(limit: 100),
         headers: { "Authorization": "Bearer #{token}" },
         as: :json
 
     assert_response :ok
 
     data = JSON.parse(response.body)
-    post_ids = data.map { |post| post["id"] }
+    post_ids = data["posts"].map { |post| post["id"] }
 
     # 같은 rank(1)의 게시물 비교: creator_post2 vs admin_update
     # dancer → creator: 10점 직접 관계
@@ -246,5 +294,43 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert creator_post2_index < admin_update_index,
            "직접 관계(10점)가 역방향 관계(1.5점)보다 앞에 와야 함"
+  end
+
+  test "GET /posts?username - profile page" do
+    get posts_url(username: "dancer", limit: 100), as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    posts_data = data["posts"]
+
+    # dancer의 게시물만 반환
+    assert posts_data.all? { |p| p["user"]["username"] == "dancer" },
+           "username=dancer면 dancer 게시물만 반환"
+
+    # 최신순 정렬 (프로필 페이지)
+    ids = posts_data.map { |p| p["id"] }
+    assert_equal ids, ids.sort.reverse, "프로필 페이지는 최신순 정렬"
+  end
+
+  test "GET /posts?username - with pagination" do
+    get posts_url(username: "dancer", limit: 1), as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+
+    assert_equal 1, data["posts"].length
+    assert_not_nil data["nextCursor"], "더 있으면 nextCursor 존재"
+
+    # 두 번째 페이지
+    get posts_url(username: "dancer", limit: 1, cursor: data["nextCursor"]),
+        as: :json
+
+    second_page = JSON.parse(response.body)
+
+    assert_equal 1, second_page["posts"].length
+    refute_equal data["posts"][0]["id"], second_page["posts"][0]["id"],
+                 "다른 게시물이어야 함"
   end
 end

@@ -134,6 +134,7 @@ before you act.**
 - `class << self` 블록으로 클래스 메서드 그룹화 (private 포함)
 - **`else` 사용 금지** (early return이나 guard clause 사용)
 - **`elsif` 사용 금지** (case when 사용)
+- **`render status: :ok` 금지** - 기본값이므로 명시 불필요 (에러 상태만 명시)
 - `return render` 및 유사 패턴 금지 (render 후 별도 줄에 return)
 - `before_action` 적극 활용하여 로직 분리
 - 인스턴스 변수 설정 메서드는 `set_` 접두사 사용

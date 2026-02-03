@@ -6,8 +6,7 @@ class PostsController < ApplicationController
   before_action :authorize_post!, only: [ :destroy ]
 
   def index
-    render json: posts_payload,
-           status: :ok
+    render json: paginated_response
   end
 
   def create
@@ -41,12 +40,35 @@ private
   end
 
   def set_posts
-    @posts = Post.visible.includes(:user).feed_ordered_for(current_user)
+    @posts = Post.visible.includes(:user)
+    @posts = filter_by_username
     @posts = @posts.where.not(video_url: nil) if params[:type] == "video"
   end
 
-  def posts_payload
-    @posts.map { |post| post_payload(post) }
+  def filter_by_username
+    return @posts.feed_ordered_for(current_user) unless params[:username]
+
+    user = User.find_by!(username: params[:username])
+    @posts.where(user: user).order(id: :desc)
+  end
+
+  def offset
+    params[:cursor].present? ? params[:cursor].to_i : 0
+  end
+
+  def limit
+    [(params[:limit] || 10).to_i, 100].min
+  end
+
+  def paginated_response
+    posts_array = @posts.to_a
+    paginated = posts_array.drop(offset).take(limit)
+    has_more = posts_array.size > offset + limit
+
+    {
+      posts: paginated.map { |post| post_payload(post) },
+      nextCursor: has_more ? (offset + limit).to_s : nil
+    }
   end
 
   def post_payload(post)
