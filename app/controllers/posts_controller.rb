@@ -76,7 +76,7 @@ private
   end
 
   def limit
-    [(params[:limit] || 10).to_i, 100].min
+    [ (params[:limit] || 10).to_i, 100 ].min
   end
 
   def paginated_response
