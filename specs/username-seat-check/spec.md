@@ -1,16 +1,16 @@
 # Username 중복 검사
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Username Availability Check (Priority: P1)
 
 사용자가 회원가입 과정에서 원하는 username이 사용 가능한지 확인한다.
 
-**Why this priority**: MVP의 핵심 기능으로, 사용자가 중복되지 않는
-username을 선택할 수 있도록 즉각적인 피드백을 제공
+**Why this priority**: MVP의 핵심 기능으로, 사용자가 중복되지 않는 username을
+선택할 수 있도록 즉각적인 피드백을 제공
 
-**Independent Test**: `/username-seats/{username}` 엔드포인트에 GET
-요청을 보내 응답 코드를 확인하는 것으로 독립적으로 테스트 가능
+**Independent Test**: `/username-seats/{username}` 엔드포인트에 GET 요청을 보내
+응답 코드를 확인하는 것으로 독립적으로 테스트 가능
 
 **Acceptance Scenarios**:
 
@@ -50,23 +50,21 @@ http GET https://local-d-omniverse-api.a99.dev/username-seats/john_doe
 http GET https://local-d-omniverse-api.a99.dev/username-seats/JohnDoe
 ```
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
-- **FR-001**: 시스템은 GET `/username-seats/{username}` 엔드포인트를
-  제공해야 함
-- **FR-002**: 시스템은 요청된 username이 이미 존재하는 경우 409
-  Conflict 상태 코드로 응답해야 함
-- **FR-003**: 시스템은 요청된 username이 존재하지 않는 경우 200 OK
-  상태 코드로 응답해야 함
+- **FR-001**: 시스템은 GET `/username-seats/{username}` 엔드포인트를 제공해야 함
+- **FR-002**: 시스템은 요청된 username이 이미 존재하는 경우 409 Conflict 상태
+  코드로 응답해야 함
+- **FR-003**: 시스템은 요청된 username이 존재하지 않는 경우 200 OK 상태 코드로
+  응답해야 함
 - **FR-004**: 시스템은 username 조회를 데이터베이스에서 수행해야 함
-- **FR-005**: 시스템은 URL 파라미터로 전달된 username을 적절히 디코딩
-  해야 함
-- **FR-006**: 시스템은 username을 자동으로 정규화해야 함 (소문자 변환,
-  공백 제거)
-- **FR-007**: Username 형식 규칙: 3-100자, 영문 소문자로 시작,
-  영문 소문자와 숫자만 사용
+- **FR-005**: 시스템은 URL 파라미터로 전달된 username을 적절히 디코딩 해야 함
+- **FR-006**: 시스템은 username을 자동으로 정규화해야 함 (소문자 변환, 공백
+  제거)
+- **FR-007**: Username 형식 규칙: 3-100자, 영문 소문자로 시작, 영문 소문자와
+  숫자만 사용
 
 ### Non-Functional Requirements
 
@@ -78,7 +76,7 @@ http GET https://local-d-omniverse-api.a99.dev/username-seats/JohnDoe
 
 - **User**: username 속성을 가진 사용자 엔티티 (기존 users 테이블 활용)
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

@@ -5,13 +5,12 @@
 **If you violate these rules, you are doing the opposite of helping.**
 
 1. **User is always right** - When user corrects you or says you're wrong,
-   acknowledge immediately and STOP. Say nothing more. WAIT for
-   instructions.
-2. **Never revert user's corrections** - User's edits are final and
-   correct. Do not undo them under any circumstances.
-3. **Minimal changes only** - When asked to "clean up" or "organize",
-   keep existing content unchanged and make only the smallest necessary
-   adjustments. Do not add, remove, or restructure content.
+   acknowledge immediately and STOP. Say nothing more. WAIT for instructions.
+2. **Never revert user's corrections** - User's edits are final and correct. Do
+   not undo them under any circumstances.
+3. **Minimal changes only** - When asked to "clean up" or "organize", keep
+   existing content unchanged and make only the smallest necessary adjustments.
+   Do not add, remove, or restructure content.
 4. **No assumptions** - When uncertain, STOP immediately and WAIT for
    clarification. Do not guess, assume, or explain. Ask the user.
 
@@ -31,12 +30,12 @@
 - Multiple corrections on same issue → You're repeating the mistake
 - User shows ANY frustration → You failed, stop and ask for clarification
 
-**CRITICAL: Always read files before editing them. Never assume structure
-or format. When you don't know how to proceed, ASK. Making up an answer
-or guessing is ALWAYS wrong.**
+**CRITICAL: Always read files before editing them. Never assume structure or
+format. When you don't know how to proceed, ASK. Making up an answer or guessing
+is ALWAYS wrong.**
 
-**Read the user's corrections carefully. Do not repeat your mistakes.
-Think before you act.**
+**Read the user's corrections carefully. Do not repeat your mistakes. Think
+before you act.**
 
 ## 한국어 의사소통
 
@@ -57,18 +56,17 @@ Think before you act.**
 
 - 새로운 기능 요청 시 **반드시** spec.md 먼저 작성/업데이트
 - 사용자가 스펙을 검토하고 승인할 때까지 **절대** 코드 작성 금지
-- 스펙 승인 후 plan.md, findings.md, progress.md 작성/업데이트
-  (3-File Pattern)
+- 스펙 승인 후 plan.md, findings.md, progress.md 작성/업데이트 (3-File Pattern)
 - 사용자가 plan 등을 검토하고 승인한 후에만 구현 시작
 - 구현 순서: spec.md 검토 → 3-File Pattern 검토 → 구현
 - 문제 맥락, 요구사항, 기존 코드 흐름 파악
 - 확신 없으면 추측 금지 → 즉시 사용자 확인
 - 기존 코드/텍스트 임의 변경 금지 → 먼저 확인
 - 최고 품질의 코드 작성에 최선을 다함
-- 프레임워크 동작 100% 확신 없으면 질문 (추측으로 불필요한 코드
-  추가는 아무것도 안 하는 것보다 나쁨)
-- "정리"나 "cleanup" 요청 시: 실제로 문제 있는지 먼저 확인
-  (멀쩡한 코드를 멋대로 바꾸는 건 망가뜨리는 것)
+- 프레임워크 동작 100% 확신 없으면 질문 (추측으로 불필요한 코드 추가는 아무것도
+  안 하는 것보다 나쁨)
+- "정리"나 "cleanup" 요청 시: 실제로 문제 있는지 먼저 확인 (멀쩡한 코드를 멋대로
+  바꾸는 건 망가뜨리는 것)
 
 ### TDD (Test-Driven Development)
 
@@ -104,10 +102,10 @@ Think before you act.**
 - `return render` 및 유사 패턴 금지 (render 후 별도 줄에 return)
 - `before_action` 적극 활용하여 로직 분리
 - 인스턴스 변수 설정 메서드는 `set_` 접두사 사용
-- 느낌표 메서드(`!`)와 일반 메서드 쌍: 둘 중 하나가 다른 쪽을 호출하여
-  중복 제거 (예외 발생 로직과 true/false 반환 로직을 분리)
-- `private`, `protected`, `public` 키워드는 별도 줄에 들여쓰기 없이
-  작성 (위아래 빈 줄 포함)
+- 느낌표 메서드(`!`)와 일반 메서드 쌍: 둘 중 하나가 다른 쪽을 호출하여 중복 제거
+  (예외 발생 로직과 true/false 반환 로직을 분리)
+- `private`, `protected`, `public` 키워드는 별도 줄에 들여쓰기 없이 작성 (위아래
+  빈 줄 포함)
 
 ### API 파라미터
 

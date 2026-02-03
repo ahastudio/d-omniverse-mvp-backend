@@ -81,15 +81,15 @@
 
 ## Test Results
 
-| Test                                    | Input              | Expected     | Actual       | Status |
-| --------------------------------------- | ------------------ | ------------ | ------------ | ------ |
-| 사용 가능한 username                    | available_username | 200 OK       | 200 OK       | ✅     |
-| 이미 존재하는 username                  | administrator      | 409 Conflict | 409 Conflict | ✅     |
-| 대소문자 혼합 username                  | ADMINISTRATOR      | 409 Conflict | 409 Conflict | ✅     |
-| 특수 문자 포함 username                 | user@123           | 200 OK       | 200 OK       | ✅     |
-| 공백 포함 username                      | "user name"        | 200 OK       | 200 OK       | ✅     |
-| 매우 짧은 username (1자)                | a                  | 200 OK       | 200 OK       | ✅     |
-| 매우 긴 username (100자)                | aaa...aaa          | 200 OK       | 200 OK       | ✅     |
+| Test                     | Input              | Expected     | Actual       | Status |
+| ------------------------ | ------------------ | ------------ | ------------ | ------ |
+| 사용 가능한 username     | available_username | 200 OK       | 200 OK       | ✅     |
+| 이미 존재하는 username   | administrator      | 409 Conflict | 409 Conflict | ✅     |
+| 대소문자 혼합 username   | ADMINISTRATOR      | 409 Conflict | 409 Conflict | ✅     |
+| 특수 문자 포함 username  | user@123           | 200 OK       | 200 OK       | ✅     |
+| 공백 포함 username       | "user name"        | 200 OK       | 200 OK       | ✅     |
+| 매우 짧은 username (1자) | a                  | 200 OK       | 200 OK       | ✅     |
+| 매우 긴 username (100자) | aaa...aaa          | 200 OK       | 200 OK       | ✅     |
 
 ## Error Log
 
@@ -101,10 +101,10 @@
 
 작업 재개 시 이 질문들로 컨텍스트 복구:
 
-| Question | Answer |
-| -------- | ------ |
-| 1. 현재 어느 단계인가? | ✅ 완료 |
-| 2. 다음에 할 일은? | 없음 (기능 구현 완료) |
-| 3. 목표는? | GET `/username-seats/{username}` API 구현 ✅ |
-| 4. 지금까지 배운 것? | User 모델과 동일한 정규화 로직 필요 (소문자, trim) |
-| 5. 완료한 작업은? | 컨트롤러, 라우트, 9개 테스트, HTTPie 문서화 |
+| Question               | Answer                                             |
+| ---------------------- | -------------------------------------------------- |
+| 1. 현재 어느 단계인가? | ✅ 완료                                            |
+| 2. 다음에 할 일은?     | 없음 (기능 구현 완료)                              |
+| 3. 목표는?             | GET `/username-seats/{username}` API 구현 ✅       |
+| 4. 지금까지 배운 것?   | User 모델과 동일한 정규화 로직 필요 (소문자, trim) |
+| 5. 완료한 작업은?      | 컨트롤러, 라우트, 9개 테스트, HTTPie 문서화        |

@@ -23,7 +23,7 @@ paths:
             type: string
           description: 조회할 사용자 ID (생략 시 현재 로그인한 사용자)
       responses:
-        '200':
+        "200":
           description: 관계 목록 조회 성공
           content:
             application/json:
@@ -33,10 +33,10 @@ paths:
                   relationships:
                     type: array
                     items:
-                      $ref: '#/components/schemas/UserRelationshipDetail'
-        '401':
+                      $ref: "#/components/schemas/UserRelationshipDetail"
+        "401":
           description: 인증 실패
-        '404':
+        "404":
           description: 사용자를 찾을 수 없음
 
     post:
@@ -61,17 +61,17 @@ paths:
                   enum: [profile_view, reaction, post_view]
                   description: interaction 유형
       responses:
-        '201':
+        "201":
           description: 점수 기록 성공
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRelationship'
-        '401':
+                $ref: "#/components/schemas/UserRelationship"
+        "401":
           description: 인증 실패
-        '404':
+        "404":
           description: 대상 사용자 없음
-        '422':
+        "422":
           description: 유효하지 않은 요청 (자기 자신, 잘못된 type)
 
   /user-relationships/{id}:
@@ -87,7 +87,7 @@ paths:
             type: string
           description: 대상 사용자 ID (ULID)
       responses:
-        '200':
+        "200":
           description: 점수 조회 성공
           content:
             application/json:
@@ -96,9 +96,9 @@ paths:
                 properties:
                   score:
                     type: integer
-        '401':
+        "401":
           description: 인증 실패
-        '404':
+        "404":
           description: 대상 사용자 없음
 
 components:
@@ -147,34 +147,34 @@ components:
           description: 관계 점수
 ```
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Profile Visit Scoring (Priority: P1)
 
 사용자가 다른 사용자의 프로필을 방문하면 관계 점수가 증가한다.
 
-**Why this priority**: SNS의 핵심 기능으로, 사용자 간 관심도를 측정하여
-추천 시스템 등에 활용
+**Why this priority**: SNS의 핵심 기능으로, 사용자 간 관심도를 측정하여 추천
+시스템 등에 활용
 
-**Independent Test**: POST `/user-relationships` 엔드포인트에 요청을
-보내 점수가 증가하는지 확인
+**Independent Test**: POST `/user-relationships` 엔드포인트에 요청을 보내 점수가
+증가하는지 확인
 
 **Acceptance Scenarios**:
 
 1. 프로필 방문 점수 기록
    - **Given** 로그인한 사용자 A와 대상 사용자 B가 존재
-   - **When** POST `/user-relationships` with `{ targetUserId,
-     type: "profile_view" }`
+   - **When** POST `/user-relationships` with
+     `{ targetUserId, type: "profile_view" }`
    - **Then** 201 Created 응답, 관계 점수 +1
 2. 동일 사용자 재방문 시 점수 누적
    - **Given** 사용자 A가 이전에 B의 프로필을 방문한 적 있음
-   - **When** POST `/user-relationships` with `{ targetUserId,
-     type: "profile_view" }`
+   - **When** POST `/user-relationships` with
+     `{ targetUserId, type: "profile_view" }`
    - **Then** 201 Created 응답, 기존 점수에 +1 누적
 3. 자기 자신 방문 시 무시
    - **Given** 로그인한 사용자 A
-   - **When** POST `/user-relationships` with `{ targetUserId: A,
-     type: "profile_view" }`
+   - **When** POST `/user-relationships` with
+     `{ targetUserId: A, type: "profile_view" }`
    - **Then** 422 Unprocessable Entity 응답
 
 ### User Story 2 - Reaction Scoring (Priority: P1)
@@ -185,8 +185,8 @@ components:
 
 1. 반응 점수 기록 (좋아요)
    - **Given** 로그인한 사용자 A와 B의 게시물이 존재
-   - **When** POST `/user-relationships` with `{ targetUserId,
-     type: "reaction" }`
+   - **When** POST `/user-relationships` with
+     `{ targetUserId, type: "reaction" }`
    - **Then** 201 Created 응답, 관계 점수 +2
 
 ### User Story 3 - Post View Scoring (Priority: P2)
@@ -197,8 +197,8 @@ components:
 
 1. 게시물 조회 점수 기록
    - **Given** 로그인한 사용자 A와 B의 게시물이 존재
-   - **When** POST `/user-relationships` with `{ targetUserId,
-     type: "post_view" }`
+   - **When** POST `/user-relationships` with
+     `{ targetUserId, type: "post_view" }`
    - **Then** 201 Created 응답, 관계 점수 +1
 
 ### User Story 4 - Relationship Score Query (Priority: P1)
@@ -220,12 +220,12 @@ components:
 
 사용자가 특정 사용자의 모든 관계를 점수 높은 순으로 조회할 수 있다.
 
-**Why this priority**: 프로필 페이지에서 관계가 가까운 사용자를
-우선 표시하여 사용자 간 연결성을 강화. 다른 사용자의 프로필을 방문해도
-해당 사용자와 관련된 사용자 목록을 볼 수 있어야 함.
+**Why this priority**: 프로필 페이지에서 관계가 가까운 사용자를 우선 표시하여
+사용자 간 연결성을 강화. 다른 사용자의 프로필을 방문해도 해당 사용자와 관련된
+사용자 목록을 볼 수 있어야 함.
 
-**Independent Test**: GET `/user-relationships?userId=<user_id>`
-엔드포인트에 요청을 보내 점수 순으로 정렬된 목록이 반환되는지 확인
+**Independent Test**: GET `/user-relationships?userId=<user_id>` 엔드포인트에
+요청을 보내 점수 순으로 정렬된 목록이 반환되는지 확인
 
 **Acceptance Scenarios**:
 
@@ -279,25 +279,21 @@ http GET \
   Authorization:"Bearer <token>"
 ```
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
-- **FR-001**: 시스템은 POST `/user-relationships` 엔드포인트를
+- **FR-001**: 시스템은 POST `/user-relationships` 엔드포인트를 제공해야 함
+- **FR-002**: 시스템은 GET `/user-relationships/:target_user_id` 엔드포인트를
   제공해야 함
-- **FR-002**: 시스템은 GET `/user-relationships/:target_user_id`
-  엔드포인트를 제공해야 함
-- **FR-003**: 시스템은 GET `/user-relationships` 엔드포인트를
-  제공해야 함
-- **FR-004**: GET `/user-relationships`는 userId 쿼리 파라미터로
-  특정 사용자의 관계 목록을 조회할 수 있어야 함 (생략 시 현재
-  로그인한 사용자)
+- **FR-003**: 시스템은 GET `/user-relationships` 엔드포인트를 제공해야 함
+- **FR-004**: GET `/user-relationships`는 userId 쿼리 파라미터로 특정 사용자의
+  관계 목록을 조회할 수 있어야 함 (생략 시 현재 로그인한 사용자)
 - **FR-005**: 시스템은 interaction type별로 다른 점수를 부여해야 함
   - `profile_view`: +1점
   - `reaction`: +2점
   - `post_view`: +1점
-- **FR-006**: 시스템은 동일 사용자 간 중복 interaction을 누적
-  처리해야 함
+- **FR-006**: 시스템은 동일 사용자 간 중복 interaction을 누적 처리해야 함
 - **FR-007**: 시스템은 자기 자신에 대한 interaction을 거부해야 함
 - **FR-008**: 시스템은 인증된 사용자만 접근을 허용해야 함
 - **FR-009**: 관계 목록은 점수 높은 순으로 정렬되어야 함
@@ -317,7 +313,7 @@ http GET \
   - `target_user_id`: 점수를 받는 대상 (외래키)
   - `score`: 누적 점수 (정수)
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

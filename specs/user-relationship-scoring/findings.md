@@ -1,7 +1,6 @@
 # Findings & Decisions
 
-> **기술적 발견, 중요한 결정이 있을 때마다 이 파일을 즉시
-> 업데이트하세요.**
+> **기술적 발견, 중요한 결정이 있을 때마다 이 파일을 즉시 업데이트하세요.**
 
 ## Requirements
 
@@ -12,8 +11,7 @@
 - [x] 자기 자신에 대한 interaction 거부
 - [x] 인증 필수
 - [x] 특정 사용자의 관계 목록 조회 (점수 높은 순)
-- [x] 대상 사용자 정보 포함 (id, username, nickname, avatarUrl,
-  score)
+- [x] 대상 사용자 정보 포함 (id, username, nickname, avatarUrl, score)
 
 ## Research Findings
 
@@ -26,8 +24,8 @@
 
 ### 기존 패턴
 
-- API 파라미터: camelCase로 받고 `transform_keys(&:underscore)`로
-  snake_case 변환
+- API 파라미터: camelCase로 받고 `transform_keys(&:underscore)`로 snake_case
+  변환
 - 에러 처리: `save!` + `rescue` 패턴 사용
 - 컨트롤러: `before_action`으로 로직 분리
 - 응답: JSON 형식 (Rails 기본 render)
@@ -42,12 +40,12 @@
 
 ## Technical Decisions
 
-| Decision                                      | Rationale                    |
-| --------------------------------------------- | ---------------------------- |
-| user_relationships 테이블 생성                | 별도 테이블로 관심사 분리    |
+| Decision                                     | Rationale                    |
+| -------------------------------------------- | ---------------------------- |
+| user_relationships 테이블 생성               | 별도 테이블로 관심사 분리    |
 | (user_id, target_user_id) 복합 unique 인덱스 | 중복 방지 및 조회 성능       |
-| score 컬럼 (integer, default: 0)              | 단순 누적 점수 저장          |
-| INTERACTION_SCORES 상수                       | type별 점수를 한 곳에서 관리 |
+| score 컬럼 (integer, default: 0)             | 단순 누적 점수 저장          |
+| INTERACTION_SCORES 상수                      | type별 점수를 한 곳에서 관리 |
 
 ## Interaction Type & Scores
 
@@ -74,18 +72,18 @@
 
 **기술적 결정**:
 
-| Decision                     | Rationale                              |
-| ---------------------------- | -------------------------------------- |
-| index 액션 추가              | RESTful 패턴 따름                      |
-| userId 쿼리 파라미터 (선택)  | 생략 시 현재, 지정 시 해당 사용자      |
-| includes(:target_user) 사용  | N+1 쿼리 방지                          |
-| order(score: :desc)          | 점수 높은 순 정렬                      |
-| User의 avatar_url 매핑       | 기존 컬럼명 사용                       |
+| Decision                    | Rationale                         |
+| --------------------------- | --------------------------------- |
+| index 액션 추가             | RESTful 패턴 따름                 |
+| userId 쿼리 파라미터 (선택) | 생략 시 현재, 지정 시 해당 사용자 |
+| includes(:target_user) 사용 | N+1 쿼리 방지                     |
+| order(score: :desc)         | 점수 높은 순 정렬                 |
+| User의 avatar_url 매핑      | 기존 컬럼명 사용                  |
 
 **필요한 작업**:
 
-1. ~~UserRelationship 모델에 `belongs_to :target_user` 관계 추가~~
-   (이미 존재 확인됨)
+1. ~~UserRelationship 모델에 `belongs_to :target_user` 관계 추가~~ (이미 존재
+   확인됨)
 2. routes.rb에 index 액션 추가 (only 배열 수정)
 3. index 액션 구현 (userId 파라미터 처리)
 4. 존재하지 않는 사용자 처리 (404)
@@ -109,17 +107,14 @@
    - avatar_url이 nil일 수 있음 (그대로 전달)
 5. **라우팅**:
    - `only: [:index, :create, :show]`로 수정
-   - index는 collection 라우트 (자동으로
-     GET /user-relationships)
+   - index는 collection 라우트 (자동으로 GET /user-relationships)
 
 ## Resources
 
 ### 문서
 
-- [Rails Migrations](
-  https://guides.rubyonrails.org/active_record_migrations.html)
-- [Rails Associations](
-  https://guides.rubyonrails.org/association_basics.html)
+- [Rails Migrations](https://guides.rubyonrails.org/active_record_migrations.html)
+- [Rails Associations](https://guides.rubyonrails.org/association_basics.html)
 
 ### 코드 참조
 

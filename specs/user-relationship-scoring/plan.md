@@ -2,17 +2,15 @@
 
 ## Summary
 
-사용자 간 interaction(프로필 방문, 반응, 게시물 보기)을 점수로 기록하여
-사용자 관계 강도를 측정하는 기능을 구현한다. 이 점수는 향후 추천 시스템
-등에 활용될 수 있다. 프로필 페이지에서 관계가 가까운 사용자 목록을
-표시한다.
+사용자 간 interaction(프로필 방문, 반응, 게시물 보기)을 점수로 기록하여 사용자
+관계 강도를 측정하는 기능을 구현한다. 이 점수는 향후 추천 시스템 등에 활용될 수
+있다. 프로필 페이지에서 관계가 가까운 사용자 목록을 표시한다.
 
 ## Goal
 
-- POST `/user-relationships` 및 GET
-  `/user-relationships/:target_user_id` API 구현 완료 ✅
-- GET `/user-relationships?userId=<user_id>` API 추가 구현
-  (관계 목록 조회)
+- POST `/user-relationships` 및 GET `/user-relationships/:target_user_id` API
+  구현 완료 ✅
+- GET `/user-relationships?userId=<user_id>` API 추가 구현 (관계 목록 조회)
 
 ## Current Phase
 
@@ -76,13 +74,13 @@
 
 ### Key Decisions
 
-| Decision            | Rationale                               |
-| ------------------- | --------------------------------------- |
-| 단일 테이블 설계    | 단순한 점수 누적, 복잡한 로그 불필요    |
-| 복합 unique 인덱스  | (user_id, target_user_id) 중복 방지     |
-| 점수 누적 방식      | 매 interaction마다 기존 점수에 합산     |
-| type별 점수 차등    | profile_view: 1, reaction: 2, post_view |
-| 양방향 별도 관리    | A→B와 B→A는 독립적인 관계               |
+| Decision           | Rationale                               |
+| ------------------ | --------------------------------------- |
+| 단일 테이블 설계   | 단순한 점수 누적, 복잡한 로그 불필요    |
+| 복합 unique 인덱스 | (user_id, target_user_id) 중복 방지     |
+| 점수 누적 방식     | 매 interaction마다 기존 점수에 합산     |
+| type별 점수 차등   | profile_view: 1, reaction: 2, post_view |
+| 양방향 별도 관리   | A→B와 B→A는 독립적인 관계               |
 
 ## Project Structure
 

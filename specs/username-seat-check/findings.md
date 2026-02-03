@@ -1,7 +1,6 @@
 # Findings & Decisions
 
-> **기술적 발견, 중요한 결정이 있을 때마다 이 파일을 즉시
-> 업데이트하세요.**
+> **기술적 발견, 중요한 결정이 있을 때마다 이 파일을 즉시 업데이트하세요.**
 
 ## Requirements
 
@@ -29,8 +28,8 @@
 
 ### 기존 패턴
 
-- API 파라미터: camelCase로 받고 `transform_keys(&:underscore)`로
-  snake_case 변환
+- API 파라미터: camelCase로 받고 `transform_keys(&:underscore)`로 snake_case
+  변환
 - 에러 처리: `save!` + `rescue` 패턴 사용
 - 컨트롤러: `before_action`으로 로직 분리
 - 응답: JSON 형식 (Rails 기본 render)
@@ -42,19 +41,20 @@
 - [x] unique 제약 조건 확인 ✅ (DB 레벨 + 모델 validation)
 - [x] 대소문자 구분 정책: **자동으로 소문자 변환** (`normalize_username`)
 - [x] username 길이 제한: **3자 이상 100자 이하**
-- [x] username 형식: **소문자 영문으로 시작, 영문+숫자만 허용** (`/\A[a-z][a-z0-9]*\z/`)
+- [x] username 형식: **소문자 영문으로 시작, 영문+숫자만 허용**
+      (`/\A[a-z][a-z0-9]*\z/`)
 
 ## Technical Decisions
 
-| Decision | Rationale |
-| -------- | --------- |
-| UsernameSeatController 생성 | 단일 책임 원칙, seats 복수형 리소스 개념 |
-| UsernameSeatsController 명명 | RESTful 규칙, "seats"를 리소스로 간주 |
-| `head :ok` / `head :conflict` 사용 | 응답 본문 불필요, HTTP 상태 코드만으로 충분 |
-| 인증 불필요 | 공개 API, 회원가입 전 호출 가능해야 함 |
-| 단일 액션 컨트롤러 | show 액션만 구현 (index, create 등 불필요) |
-| 파라미터명 `username` | URL path parameter, 별도 변환 불필요 |
-| 단순 존재 여부 조회 | `User.exists?(username: params[:username])` 사용 |
+| Decision                           | Rationale                                        |
+| ---------------------------------- | ------------------------------------------------ |
+| UsernameSeatController 생성        | 단일 책임 원칙, seats 복수형 리소스 개념         |
+| UsernameSeatsController 명명       | RESTful 규칙, "seats"를 리소스로 간주            |
+| `head :ok` / `head :conflict` 사용 | 응답 본문 불필요, HTTP 상태 코드만으로 충분      |
+| 인증 불필요                        | 공개 API, 회원가입 전 호출 가능해야 함           |
+| 단일 액션 컨트롤러                 | show 액션만 구현 (index, create 등 불필요)       |
+| 파라미터명 `username`              | URL path parameter, 별도 변환 불필요             |
+| 단순 존재 여부 조회                | `User.exists?(username: params[:username])` 사용 |
 
 ## Issues Encountered
 
@@ -64,8 +64,7 @@
 
 **원인**: User 모델의 normalize_username은 저장 시에만 동작
 
-**해결**: 컨트롤러에서도 동일한 정규화 적용
-(`username.to_s.strip.downcase`)
+**해결**: 컨트롤러에서도 동일한 정규화 적용 (`username.to_s.strip.downcase`)
 
 **결과**: 해결됨
 
@@ -73,10 +72,8 @@
 
 ### 문서
 
-- [Rails Routing Guide](
-  https://guides.rubyonrails.org/routing.html)
-- [HTTP Status Codes](
-  https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+- [Rails Routing Guide](https://guides.rubyonrails.org/routing.html)
+- [HTTP Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
 
 ### 코드 참조
 
