@@ -78,7 +78,12 @@ class Post < ApplicationRecord
   end
 
   def soft_delete!
-    update!(deleted_at: Time.current)
+    return if deleted?
+
+    transaction do
+      update!(deleted_at: Time.current)
+      parent&.decrement!(:replies_count)
+    end
   end
 
   def ancestors

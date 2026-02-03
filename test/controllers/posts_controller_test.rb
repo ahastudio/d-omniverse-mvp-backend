@@ -442,4 +442,54 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     refute_equal data["posts"][0]["id"], second_page["posts"][0]["id"],
                  "다른 게시물이어야 함"
   end
+
+  test "GET /posts/:id - not found" do
+    get post_url("01NONEXISTENT00000000000"), as: :json
+
+    assert_response :not_found
+
+    json = JSON.parse(response.body)
+    assert_equal "Post not found", json["error"]
+  end
+
+  test "GET /posts/:id/replies - not found" do
+    get replies_post_url("01NONEXISTENT00000000000"), as: :json
+
+    assert_response :not_found
+
+    json = JSON.parse(response.body)
+    assert_equal "Post not found", json["error"]
+  end
+
+  test "GET /posts/:id/thread - not found" do
+    get thread_post_url("01NONEXISTENT00000000000"), as: :json
+
+    assert_response :not_found
+
+    json = JSON.parse(response.body)
+    assert_equal "Post not found", json["error"]
+  end
+
+  test "GET /posts - no N+1 query for parent loading" do
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get posts_url(limit: 10), as: :json
+    end
+
+    assert_response :ok
+
+    # posts 쿼리 분석
+    parent_queries = queries.select { |q| q.include?("SELECT") && q.include?("posts") }
+
+    # includes(:user, :parent)를 사용하면:
+    # 1. 메인 posts 쿼리
+    # 2. parent preload 쿼리 (있는 경우)
+    # 답글 개수만큼 추가 쿼리가 발생하지 않음 (N+1 방지)
+    assert_operator parent_queries.length, :<=, 2,
+                    "N+1 없이 최대 2개 쿼리여야 함. 실제: #{parent_queries.length}"
+  end
 end

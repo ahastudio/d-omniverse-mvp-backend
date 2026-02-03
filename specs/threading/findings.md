@@ -61,11 +61,15 @@ end
 
 ## Issues Encountered
 
-| Issue                   | Resolution                           |
-| ----------------------- | ------------------------------------ |
-| bundle install 실패     | 마이그레이션 파일 직접 생성          |
-| fixture ID 순서 문제    | ULID가 피드 알고리즘에 영향, ID 수정 |
-| parent_payload 무한재귀 | 간략한 ParentPost 스키마로 분리      |
+| Issue                                | Resolution                       |
+| ------------------------------------ | -------------------------------- |
+| bundle install 실패                  | 마이그레이션 파일 직접 생성      |
+| fixture ID 순서 문제                 | ULID가 피드 알고리즘에 영향, ID  |
+|                                      | 수정                             |
+| parent_payload 무한재귀              | 간략한 ParentPost 스키마로 분리  |
+| 존재하지 않는 게시물 404에러         | set_post에 rescue 처리 추가      |
+| fixture ID 길이 불일치               | 모든 ID를 26자로 통일 (008, 009) |
+| post_payload에서 parent N+1 쿼리     | includes(:user, :parent) 추가    |
 
 ## Resources
 
@@ -100,13 +104,43 @@ end
 - Soft delete는 deleted_at 컬럼으로 구현
 - 삭제된 글도 스레드 구조 유지 (parent_id 참조 허용)
 
+### 에러 처리 (2026-02-03)
+
+- `ActiveRecord::RecordNotFound` rescue로 일관된 JSON 응답
+- `set_post` 메서드에 rescue 블록 추가로 show/replies/thread 액션 통합
+  처리
+- UsersController 패턴과 동일하게 `{ error: "Post not found" }` 형식
+  사용
+
+### 문서화 규칙 강화 (2026-02-03)
+
+- 코드 작성과 문서 업데이트는 분리할 수 없는 하나의 작업
+- 구현 순서 명확화: 문서 확인 → 테스트 작성 → 구현 → 테스트 실행 → 문서
+  업데이트
+- progress.md, findings.md 업데이트는 사용자 요청 전에 자동으로 해야 함
+- AGENTS.md에 피드백 루프 규칙을 매우 구체적으로 강화
+
+### Fixture 관리 (2026-02-03)
+
+- fixture ID 길이 일관성이 매우 중요 (lexicographic ordering 영향)
+- ULID 형식의 모든 ID는 동일한 길이(26자)를 유지해야 함
+- `order(id: :desc)` 같은 정렬이 문자열 길이에 의존하므로 비일관성 시 테스트 깨질
+  수 있음
+
+### N+1 쿼리 최적화 (2026-02-03)
+
+- `post_payload`에서 parent를 참조하면 각 게시물마다 추가 쿼리 발생 (N+1)
+- `includes(:user, :parent)`로 preload하면 O(1) 쿼리로 최적화
+- `includes`는 별도 쿼리로 로드하지만 N+1을 방지 (메인 1개 + preload 1개 = 총 2개)
+- ActiveSupport::Notifications로 쿼리 수 검증 테스트 작성 가능
+
 ### 확장 (2026-02-03)
 
 - 목록 API에서 parent 객체 임베드 시 무한재귀 주의
 - ParentPost는 간략한 정보만 포함 (id, content, deleted, parentId)
 - depth를 DB 컬럼으로 캐싱하여 O(1) 조회 가능
 
-### depth 컬럼 구현 (2026-02-04)
+### depth 컬럼 구현 (2026-02-03)
 
 - before_save 콜백으로 depth 자동 계산 (`parent.depth + 1`)
 - fixture는 콜백을 트리거하지 않으므로 depth 값 직접 설정 필요

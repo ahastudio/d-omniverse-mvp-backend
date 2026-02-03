@@ -50,6 +50,8 @@ private
 
   def set_post
     @post = Post.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Post not found" }, status: :not_found
   end
 
   def authorize_post!
@@ -59,7 +61,7 @@ private
   end
 
   def set_posts
-    @posts = Post.visible.includes(:user)
+    @posts = Post.visible.includes(:user, :parent)
     @posts = filter_by_username
     @posts = @posts.where.not(video_url: nil) if params[:type] == "video"
   end

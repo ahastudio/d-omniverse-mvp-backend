@@ -93,6 +93,27 @@ class PostTest < ActiveSupport::TestCase
     assert post.deleted?
   end
 
+  test "soft delete decrements parent replies_count" do
+    parent = posts(:parent_post)
+    child = posts(:child_post)
+
+    initial_count = parent.replies_count
+    child.soft_delete!
+
+    assert_equal initial_count - 1, parent.reload.replies_count
+  end
+
+  test "soft delete idempotent - does not decrement twice" do
+    parent = posts(:parent_post)
+    child = posts(:child_post)
+
+    initial_count = parent.replies_count
+    child.soft_delete!
+    child.soft_delete!
+
+    assert_equal initial_count - 1, parent.reload.replies_count
+  end
+
   test "ancestors" do
     child = posts(:child_post)
     parent = posts(:parent_post)

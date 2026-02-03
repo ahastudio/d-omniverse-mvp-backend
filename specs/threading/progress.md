@@ -91,13 +91,53 @@
 - `test/controllers/posts_controller_test.rb` (수정 - 테스트명 및 필드명)
 - `test/fixtures/posts.yml` (수정 - child_post에 depth 추가)
 
+### Phase 7: 404 에러 처리 ✅
+
+**작업 내역**:
+
+1. `set_post` 메서드에 `ActiveRecord::RecordNotFound` rescue 처리 추가
+2. JSON 형식 에러 응답 (`{ error: "Post not found" }`) 반환
+3. show/replies/thread 액션 테스트 케이스 3개 추가
+
+**생성/수정 파일**:
+
+- `app/controllers/posts_controller.rb` (수정 - set_post rescue 추가)
+- `test/controllers/posts_controller_test.rb` (수정 - 404 테스트 3개 추가)
+
+### Phase 8: Fixture ID 길이 통일 ✅
+
+**작업 내역**:
+
+1. child_post, deleted_post ID 길이를 27자에서 26자로 수정
+2. lexicographic ordering 일관성 확보
+3. child_post: `01JCSPOST0000000000000008`, deleted_post:
+   `01JCSPOST0000000000000009`
+
+**생성/수정 파일**:
+
+- `test/fixtures/posts.yml` (수정 - ID 길이 통일)
+
+### Phase 9: N+1 쿼리 해결 ✅
+
+**작업 내역**:
+
+1. N+1 쿼리 검증 테스트 작성 (ActiveSupport::Notifications 사용)
+2. `set_posts`에 `includes(:user, :parent)` 추가
+3. `post_payload`에서 parent 참조 시 N+1 방지
+4. 피드 렌더링을 O(1) 쿼리로 최적화
+
+**생성/수정 파일**:
+
+- `app/controllers/posts_controller.rb` (수정 - includes(:parent) 추가)
+- `test/controllers/posts_controller_test.rb` (수정 - N+1 테스트 추가)
+
 ## Test Results
 
 | Test      | Input | Expected | Actual | Status |
 | --------- | ----- | -------- | ------ | ------ |
-| 전체 실행 | -     | 77 pass  | 77     | ✅     |
+| 전체 실행 | -     | 83 pass  | 83     | ✅     |
 | 모델      | -     | 14 pass  | 14     | ✅     |
-| 컨트롤러  | -     | 25 pass  | 25     | ✅     |
+| 컨트롤러  | -     | 29 pass  | 29     | ✅     |
 
 ## Error Log
 

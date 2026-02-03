@@ -59,7 +59,7 @@ parent_post:
   updated_at: 2025-01-05 10:00:00 Z
 
 child_post:
-  id: 01JCSPOST00000000000000001
+  id: 01JCSPOST0000000000000008
   user_id: 01JCS1234567890ABCDEFGHM002
   content: This is a reply
   parent_id: 01JCSPOST0000000000000000
@@ -68,7 +68,7 @@ child_post:
   updated_at: 2025-01-05 10:05:00 Z
 
 deleted_post:
-  id: 01JCSPOST00000000000000000
+  id: 01JCSPOST0000000000000009
   user_id: 01JCS1234567890ABCDEFGHM001
   content: This post was deleted
   deleted_at: 2025-01-05 11:00:00 Z
