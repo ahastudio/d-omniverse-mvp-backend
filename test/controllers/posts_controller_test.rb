@@ -264,6 +264,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     json = JSON.parse(response.body)
     assert_equal 1, json["depth"]
+    assert_equal 0, json["repliesCount"]
     assert_not_nil json["parent"]
     assert_equal parent.id, json["parent"]["id"]
     assert_equal parent.content, json["parent"]["content"]
@@ -279,6 +280,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     json = JSON.parse(response.body)
     assert_equal 0, json["depth"]
     assert_nil json["parent"]
+    assert_equal 1, json["repliesCount"]
   end
 
   test "GET /posts excludes deleted posts" do

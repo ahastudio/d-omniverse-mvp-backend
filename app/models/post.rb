@@ -78,9 +78,9 @@ class Post < ApplicationRecord
   end
 
   def soft_delete!
-    return if deleted?
+    with_lock do
+      return if deleted?
 
-    transaction do
       update!(deleted_at: Time.current)
       parent&.decrement!(:replies_count)
     end
