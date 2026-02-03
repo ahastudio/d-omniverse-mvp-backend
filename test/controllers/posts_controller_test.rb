@@ -51,6 +51,26 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_match "https://example.com/video.mp4", response.body
   end
 
+  test "POST /posts - duplicate within 10 seconds" do
+    user = users(:admin)
+    token = user.generate_token
+
+    post posts_url,
+         params: { content: "Duplicate test" },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :created
+
+    post posts_url,
+         params: { content: "Duplicate test" },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :unprocessable_entity
+    assert_match "Duplicate post detected", response.body
+  end
+
   test "POST /posts - with video" do
     user = users(:dancer)
     token = user.generate_token
