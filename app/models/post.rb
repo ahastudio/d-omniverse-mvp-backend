@@ -5,7 +5,7 @@ class Post < ApplicationRecord
 
   belongs_to :user
 
-  default_scope { where(deleted_at: nil) }
+  scope :visible, -> { where(deleted_at: nil) }
 
   validates :content, presence: true
 
