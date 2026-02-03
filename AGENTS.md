@@ -73,6 +73,12 @@ Think before you act.**
 ### 코드 스타일
 
 - Ruby 코드는 가로 80컬럼 제한
+- **메서드는 5줄 이내** (def/end 제외) - 길면 extract method
+- **자명한 이름 사용** - 구현 방식(HOW)이 아닌 의도(WHAT)를 표현
+  - 나쁜 예: `raise_if_self_target!` (구현 설명)
+  - 좋은 예: `ensure_not_self!` (의도 표현)
+- **named parameter 사용** - 파라미터 2개 이상이면 명시적으로
+- `class << self` 블록으로 클래스 메서드 그룹화 (private 포함)
 - `else` 사용 금지 (early return이나 guard clause 사용)
 - `return render` 및 유사 패턴 금지 (render 후 별도 줄에 return)
 - `before_action` 적극 활용하여 로직 분리

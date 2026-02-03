@@ -15,22 +15,53 @@ class UserRelationship < ApplicationRecord
 
   validate :cannot_target_self
 
-  def self.add_score!(user_id:, target_user_id:, interaction_type:)
-    score_value = INTERACTION_SCORES[interaction_type]
-    return nil unless score_value
+  class << self
+    def add_score!(user_id:, target_user_id:, interaction_type:)
+      score = INTERACTION_SCORES[interaction_type]
+      return nil unless score
 
-    relationship = find_or_initialize_by(
-      user_id: user_id,
-      target_user_id: target_user_id
-    )
-    relationship.id ||= ULID.generate
-    relationship.score += score_value
-    relationship.save!
-    relationship
-  end
+      ensure_not_self!(user_id:, target_user_id:)
+      upsert_relationship(user_id:, target_user_id:, score:)
+    end
 
-  def self.score_for(user_id:, target_user_id:)
-    find_by(user_id: user_id, target_user_id: target_user_id)&.score || 0
+    def score_for(user_id:, target_user_id:)
+      find_by(user_id: user_id, target_user_id: target_user_id)&.score || 0
+    end
+
+  private
+
+    def ensure_not_self!(user_id:, target_user_id:)
+      return unless user_id == target_user_id
+
+      raise ActiveRecord::RecordInvalid, self_target_error_record(user_id)
+    end
+
+    def self_target_error_record(user_id)
+      new(user_id: user_id, target_user_id: user_id, score: 0).tap do |r|
+        r.errors.add(:target_user_id, "cannot be the same as user")
+      end
+    end
+
+    def upsert_relationship(user_id:, target_user_id:, score:)
+      sql = build_upsert_sql(user_id:, target_user_id:, score:)
+      instantiate(connection.exec_query(sql).first)
+    end
+
+    def build_upsert_sql(user_id:, target_user_id:, score:)
+      t = Time.current
+      sanitize_sql_array(
+        [UPSERT_SQL, ULID.generate, user_id, target_user_id, score, t, t, score, t]
+      )
+    end
+
+    UPSERT_SQL = <<~SQL.squish.freeze
+      INSERT INTO user_relationships
+        (id, user_id, target_user_id, score, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT (user_id, target_user_id) DO UPDATE
+      SET score = user_relationships.score + ?, updated_at = ?
+      RETURNING *
+    SQL
   end
 
 private
