@@ -146,26 +146,63 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     Post.define_method(:process_video, original_process_video)
   end
 
+  test "POST /posts - with parentId" do
+    user = users(:admin)
+    token = user.generate_token
+    parent = posts(:parent_post)
+
+    post posts_url,
+         params: {
+           content: "Reply content",
+           parentId: parent.id
+         },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :created
+
+    json = JSON.parse(response.body)
+    assert_equal parent.id, json["parentId"]
+  end
+
+  test "POST /posts - with invalid parentId" do
+    user = users(:admin)
+    token = user.generate_token
+
+    post posts_url,
+         params: {
+           content: "Reply to non-existent post",
+           parentId: "01NONEXISTENT00000000000"
+         },
+         headers: { "Authorization": "Bearer #{token}" },
+         as: :json
+
+    assert_response :unprocessable_entity
+
+    json = JSON.parse(response.body)
+    assert_includes json["errors"], "Parent does not exist"
+  end
+
   test "DELETE /posts/:id" do
     user = users(:admin)
     token = user.generate_token
-    post = posts(:text_only_update)
+    target = posts(:text_only_update)
 
-    delete post_url(post),
+    delete post_url(target),
            headers: { "Authorization": "Bearer #{token}" },
            as: :json
 
     assert_response :no_content
 
-    assert_not_nil post.reload.deleted_at
+    assert_not_nil target.reload.deleted_at
   end
 
   test "DELETE /posts/:id - forbidden" do
     user = users(:dancer)
     token = user.generate_token
-    post = posts(:text_only_update)
+    target = posts(:text_only_update)
 
-    delete post_url(post),
+    delete post_url(target),
            headers: { "Authorization": "Bearer #{token}" },
            as: :json
 
@@ -173,11 +210,99 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "DELETE /posts/:id - unauthorized" do
-    post = posts(:text_only_update)
+    target = posts(:text_only_update)
 
-    delete post_url(post), as: :json
+    delete post_url(target), as: :json
 
     assert_response :unauthorized
+  end
+
+  test "GET /posts/:id" do
+    target = posts(:text_only_update)
+
+    get post_url(target), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal target.id, json["id"]
+    assert_equal target.content, json["content"]
+  end
+
+  test "GET /posts/:id/replies" do
+    parent = posts(:parent_post)
+
+    get replies_post_url(parent), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json.length
+    assert_equal posts(:child_post).id, json.first["id"]
+  end
+
+  test "GET /posts/:id/thread" do
+    child = posts(:child_post)
+
+    get thread_post_url(child), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json["ancestors"].length
+    assert_equal posts(:parent_post).id, json["ancestors"].first["id"]
+    assert_equal child.id, json["post"]["id"]
+  end
+
+  test "GET /posts/:id - includes parent and depth" do
+    child = posts(:child_post)
+    parent = posts(:parent_post)
+
+    get post_url(child), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json["depth"]
+    assert_equal 0, json["repliesCount"]
+    assert_not_nil json["parent"]
+    assert_equal parent.id, json["parent"]["id"]
+    assert_equal parent.content, json["parent"]["content"]
+
+    # parent에 user 정보 포함 확인
+    assert_not_nil json["parent"]["user"]
+    assert_equal parent.user.id, json["parent"]["user"]["id"]
+    assert_equal parent.user.username, json["parent"]["user"]["username"]
+    assert_equal parent.user.nickname, json["parent"]["user"]["nickname"]
+    assert_equal parent.user.avatar_url, json["parent"]["user"]["avatarUrl"]
+
+    # parent에 Post와 동일한 모든 필드 포함 확인
+    assert_nil json["parent"]["videoUrl"]
+    assert_equal parent.depth, json["parent"]["depth"]
+    assert_equal parent.replies_count, json["parent"]["repliesCount"]
+    assert_equal parent.created_at.iso8601, json["parent"]["createdAt"]
+    assert_equal parent.updated_at.iso8601, json["parent"]["updatedAt"]
+  end
+
+  test "GET /posts/:id - root post has no parent" do
+    parent = posts(:parent_post)
+
+    get post_url(parent), as: :json
+
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal 0, json["depth"]
+    assert_nil json["parent"]
+    assert_equal 1, json["repliesCount"]
+  end
+
+  test "GET /posts excludes deleted posts" do
+    get posts_url, as: :json
+
+    assert_response :ok
+
+    refute_match posts(:deleted_post).id, response.body
   end
 
   test "GET /posts - authenticated user - recommended order" do
@@ -197,11 +322,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_operator posts_data.length, :>, 0, "피드에 게시물이 있어야 함"
 
     # 게시물 정보 추출
-    feed = posts_data.map do |post|
+    feed = posts_data.map do |p|
       {
-        id: post["id"],
-        author: post["user"]["username"],
-        is_self: post["user"]["id"] == user.id
+        id: p["id"],
+        author: p["user"]["username"],
+        is_self: p["user"]["id"] == user.id
       }
     end
 
@@ -284,7 +409,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     data = JSON.parse(response.body)
-    post_ids = data["posts"].map { |post| post["id"] }
+    post_ids = data["posts"].map { |p| p["id"] }
 
     # 같은 rank(1)의 게시물 비교: creator_post2 vs admin_update
     # dancer → creator: 10점 직접 관계
@@ -332,5 +457,129 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, second_page["posts"].length
     refute_equal data["posts"][0]["id"], second_page["posts"][0]["id"],
                  "다른 게시물이어야 함"
+  end
+
+  test "GET /posts/:id - not found" do
+    get post_url("01NONEXISTENT00000000000"), as: :json
+
+    assert_response :not_found
+
+    json = JSON.parse(response.body)
+    assert_equal "Post not found", json["error"]
+  end
+
+  test "GET /posts/:id/replies - not found" do
+    get replies_post_url("01NONEXISTENT00000000000"), as: :json
+
+    assert_response :not_found
+
+    json = JSON.parse(response.body)
+    assert_equal "Post not found", json["error"]
+  end
+
+  test "GET /posts/:id/thread - not found" do
+    get thread_post_url("01NONEXISTENT00000000000"), as: :json
+
+    assert_response :not_found
+
+    json = JSON.parse(response.body)
+    assert_equal "Post not found", json["error"]
+  end
+
+  test "GET /posts - no N+1 query for parent loading" do
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get posts_url(limit: 10), as: :json
+    end
+
+    assert_response :ok
+
+    # posts 쿼리 분석
+    parent_queries = queries.select { |q| q.include?("SELECT") && q.include?("posts") }
+
+    # includes(:user, :parent)를 사용하면:
+    # 1. 메인 posts 쿼리
+    # 2. parent preload 쿼리 (있는 경우)
+    # 답글 개수만큼 추가 쿼리가 발생하지 않음 (N+1 방지)
+    assert_operator parent_queries.length, :<=, 2,
+                    "N+1 없이 최대 2개 쿼리여야 함. 실제: #{parent_queries.length}"
+  end
+
+  test "GET /posts - no N+1 query for parent user loading" do
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get posts_url(limit: 10), as: :json
+    end
+
+    assert_response :ok
+
+    # users 쿼리 분석
+    user_queries = queries.select { |q| q.include?("SELECT") && q.include?("users") }
+
+    # includes(:user, parent: :user)를 사용하면:
+    # 1. 메인 posts의 users 쿼리
+    # 2. parents의 users 쿼리
+    # parent 개수만큼 추가 user 쿼리가 발생하지 않음 (N+1 방지)
+    assert_operator user_queries.length, :<=, 2,
+                    "N+1 없이 최대 2개 user 쿼리여야 함. 실제: #{user_queries.length}"
+  end
+
+  test "GET /posts/:id/replies - no N+1 query" do
+    parent = posts(:parent_post)
+
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get replies_post_url(parent), as: :json
+    end
+
+    assert_response :ok
+
+    # SELECT 쿼리 분석
+    select_queries = queries.select { |q| q.include?("SELECT") }
+
+    # includes(:user, parent: :user)를 사용하면:
+    # 1. parent 조회 (set_post)
+    # 2. replies 쿼리
+    # 3. replies의 users 쿼리
+    # 4. replies의 parents 쿼리 (parent는 동일)
+    # 5. parents의 users 쿼리
+    # 답글 개수만큼 추가 쿼리 발생하지 않음
+    assert_operator select_queries.length, :<=, 5,
+                    "N+1 없이 최대 5개 쿼리여야 함. 실제: #{select_queries.length}"
+  end
+
+  test "GET /posts/:id/thread - no N+1 query" do
+    child = posts(:child_post)
+
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get thread_post_url(child), as: :json
+    end
+
+    assert_response :ok
+
+    # SELECT 쿼리 분석
+    select_queries = queries.select { |q| q.include?("SELECT") }
+
+    # ancestors, post, replies 모두 parent 정보 접근
+    # includes(:user, parent: :user) 없이는 N+1 발생
+    assert_operator select_queries.length, :<=, 6,
+                    "N+1 없이 최대 6개 쿼리여야 함. 실제: #{select_queries.length}"
   end
 end

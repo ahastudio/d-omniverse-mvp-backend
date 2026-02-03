@@ -15,7 +15,12 @@ Rails.application.routes.draw do
 
   resources :users, only: [ :create, :show, :update ], param: :username
 
-  resources :posts, only: [ :index, :create, :destroy ]
+  resources :posts, only: [ :index, :create, :show, :destroy ] do
+    member do
+      get :replies
+      get :thread
+    end
+  end
 
   resources :user_relationships, only: [ :index, :create, :show ],
             path: "user-relationships"
