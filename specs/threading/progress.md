@@ -91,67 +91,45 @@
 - `test/controllers/posts_controller_test.rb` (수정 - 테스트명 및 필드명)
 - `test/fixtures/posts.yml` (수정 - child_post에 depth 추가)
 
-### Phase 7: 404 에러 처리 ✅
+### Phase 7: 에러 처리 및 최적화 ✅
 
 **작업 내역**:
 
-1. `set_post` 메서드에 `ActiveRecord::RecordNotFound` rescue 처리 추가
-2. JSON 형식 에러 응답 (`{ error: "Post not found" }`) 반환
-3. show/replies/thread 액션 테스트 케이스 3개 추가
+1. 404 에러 처리: `set_post`에 `ActiveRecord::RecordNotFound` rescue 추가
+2. Fixture ID 길이 통일: child_post, deleted_post ID를 26자로 수정
+3. N+1 쿼리 해결: `set_posts`에 `includes(:user, :parent)` 추가
+4. ParentPost에 user 정보 추가: avatarUrl 포함
 
 **생성/수정 파일**:
 
-- `app/controllers/posts_controller.rb` (수정 - set_post rescue 추가)
-- `test/controllers/posts_controller_test.rb` (수정 - 404 테스트 3개 추가)
-
-### Phase 8: Fixture ID 길이 통일 ✅
-
-**작업 내역**:
-
-1. child_post, deleted_post ID 길이를 27자에서 26자로 수정
-2. lexicographic ordering 일관성 확보
-3. child_post: `01JCSPOST0000000000000008`, deleted_post:
-   `01JCSPOST0000000000000009`
-
-**생성/수정 파일**:
-
+- `app/controllers/posts_controller.rb` (수정 - set_post rescue, includes(:parent), parent_payload user 추가)
+- `test/controllers/posts_controller_test.rb` (수정 - 404 테스트, N+1 테스트, avatarUrl 검증)
 - `test/fixtures/posts.yml` (수정 - ID 길이 통일)
+- `specs/threading/spec.md` (수정 - ParentPost user 추가)
 
-### Phase 9: N+1 쿼리 해결 ✅
-
-**작업 내역**:
-
-1. N+1 쿼리 검증 테스트 작성 (ActiveSupport::Notifications 사용)
-2. `set_posts`에 `includes(:user, :parent)` 추가
-3. `post_payload`에서 parent 참조 시 N+1 방지
-4. 피드 렌더링을 O(1) 쿼리로 최적화
-
-**생성/수정 파일**:
-
-- `app/controllers/posts_controller.rb` (수정 - includes(:parent) 추가)
-- `test/controllers/posts_controller_test.rb` (수정 - N+1 테스트 추가)
-
-### Phase 10: ParentPost에 user 정보 추가 ✅
+### Phase 8: ParentPost 스키마 완성 ✅
 
 **작업 내역**:
 
-1. spec.md ParentPost 스키마에 user 필드 추가
-2. 기존 테스트에 parent.user 검증 추가
-3. `parent_payload`에 user 정보 (id, username, nickname, avatarUrl) 포함
-4. 부모 글 작성자 정보 노출
+1. spec.md ParentPost 스키마에 Post와 동일한 필드 추가
+2. parent_payload에 videoUrl, depth, repliesCount, createdAt, updatedAt 추가
+3. 테스트 작성 및 통과 확인 (83 pass, 224 assertions)
+4. ParentPost와 Post 스키마 일관성 확보
 
 **생성/수정 파일**:
 
-- `specs/threading/spec.md` (수정 - ParentPost user avatarUrl 추가)
-- `app/controllers/posts_controller.rb` (수정 - parent_payload avatarUrl 추가)
-- `test/controllers/posts_controller_test.rb` (수정 - avatarUrl 검증 추가)
+- `specs/threading/spec.md` (수정 - ParentPost 스키마에 5개 필드 추가)
+- `app/controllers/posts_controller.rb` (수정 - parent_payload 5개 필드 추가)
+- `test/controllers/posts_controller_test.rb` (수정 - parent 필드 검증 추가)
+- `specs/threading/findings.md` (수정 - 스키마 일관성 결정 추가)
+- `specs/threading/progress.md` (수정 - Phase 8 추가)
 
 ## Test Results
 
 | Test       | Input | Expected | Actual | Status |
 | ---------- | ----- | -------- | ------ | ------ |
 | 전체 실행  | -     | 83 pass  | 83     | ✅     |
-| assertions | -     | 219 pass | 219    | ✅     |
+| assertions | -     | 224 pass | 224    | ✅     |
 | 모델       | -     | 14 pass  | 14     | ✅     |
 | 컨트롤러   | -     | 29 pass  | 29     | ✅     |
 
@@ -163,10 +141,10 @@
 
 ## 5-Question Reboot Check
 
-| Question               | Answer                           |
-| ---------------------- | -------------------------------- |
-| 1. 현재 어느 단계인가? | 완료                             |
-| 2. 다음에 할 일은?     | -                                |
-| 3. 목표는?             | 스레드 기능 구현 완료            |
-| 4. 지금까지 배운 것?   | See findings.md                  |
-| 5. 완료한 작업은?      | depth 컬럼 추가, TDD로 전체 구현 |
+| Question               | Answer                                           |
+| ---------------------- | ------------------------------------------------ |
+| 1. 현재 어느 단계인가? | 완료                                             |
+| 2. 다음에 할 일은?     | -                                                |
+| 3. 목표는?             | 스레드 기능 구현 완료                            |
+| 4. 지금까지 배운 것?   | See findings.md                                  |
+| 5. 완료한 작업은?      | 스레드 기능 전체 구현 (TDD, 최적화, 스키마 완성) |

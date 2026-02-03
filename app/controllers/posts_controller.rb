@@ -126,8 +126,13 @@ private
         avatarUrl: parent.user.avatar_url
       },
       content: parent.deleted? ? nil : parent.content,
+      videoUrl: parent.video_url,
       deleted: parent.deleted? || nil,
-      parentId: parent.parent_id
+      parentId: parent.parent_id,
+      depth: parent.depth,
+      repliesCount: parent.replies_count,
+      createdAt: parent.created_at&.iso8601,
+      updatedAt: parent.updated_at&.iso8601
     }.compact
   end
 

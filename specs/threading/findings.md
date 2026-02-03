@@ -61,15 +61,15 @@ end
 
 ## Issues Encountered
 
-| Issue                            | Resolution                       |
-| -------------------------------- | -------------------------------- |
-| bundle install 실패              | 마이그레이션 파일 직접 생성      |
-| fixture ID 순서 문제             | ULID가 피드 알고리즘에 영향, ID  |
-|                                  | 수정                             |
-| parent_payload 무한재귀          | 간략한 ParentPost 스키마로 분리  |
-| 존재하지 않는 게시물 404에러     | set_post에 rescue 처리 추가      |
-| fixture ID 길이 불일치           | 모든 ID를 26자로 통일 (008, 009) |
-| post_payload에서 parent N+1 쿼리 | includes(:user, :parent) 추가    |
+| Issue                            | Resolution                           |
+| -------------------------------- | ------------------------------------ |
+| bundle install 실패              | 마이그레이션 파일 직접 생성          |
+| fixture ID 순서 문제             | ULID가 피드 알고리즘에 영향, ID 수정 |
+| parent_payload 무한재귀          | 간략한 ParentPost 스키마로 분리      |
+| 존재하지 않는 게시물 404에러     | set_post에 rescue 처리 추가          |
+| fixture ID 길이 불일치           | 모든 ID를 26자로 통일 (008, 009)     |
+| post_payload에서 parent N+1 쿼리 | includes(:user, :parent) 추가        |
+| 승인 없이 spec 수정 및 구현      | 작업 되돌리고 AGENTS.md 규칙 강화    |
 
 ## Resources
 
@@ -136,8 +136,24 @@ end
 
 ### API 스키마 일관성 (2026-02-03)
 
-- ParentPost에도 user 정보 포함 필요 (UI에서 작성자 표시)- user 객체는 일관되게 id, username, nickname, avatarUrl 포함- 스키마 변경 시 spec.md 먼저 업데이트 후 구현
+- ParentPost에도 user 정보 포함 필요 (UI에서 작성자 표시)
+- user 객체는 일관되게 id, username, nickname, avatarUrl 포함
+- 스키마 변경 시 spec.md 먼저 업데이트 후 구현
 - parent.user는 includes로 preload되어 추가 쿼리 없음
+
+### ParentPost 스키마 확장 (2026-02-03)
+
+- ParentPost는 Post와 동일한 필드를 모두 포함해야 함
+- videoUrl, depth, repliesCount, createdAt, updatedAt 추가
+- 스키마 일관성 확보로 프론트엔드에서 동일한 방식으로 렌더링 가능
+- "요약 정보"라는 설명에도 불구하고 전체 정보 제공이 UX 개선에 유리
+
+### ParentPost 스키마 완성 구현 (2026-02-03)
+
+- TDD: 테스트 먼저 작성 → 실패 확인 → 구현 → 통과 확인
+- parent_payload에 필드 추가 시 `.compact` 호출로 nil 값 자동 제거
+- videoUrl이 nil인 경우 `assert_nil` 사용으로 경고 방지
+- 전체 테스트로 다른 기능에 영향 없음 확인 (83 pass, 224 assertions)
 
 ### 확장 (2026-02-03)
 
@@ -151,3 +167,10 @@ end
 - fixture는 콜백을 트리거하지 않으므로 depth 값 직접 설정 필요
 - 기존 ancestors_count 메서드는 유지 (하위 호환성)
 - DB 마이그레이션 순서: 테스트 환경 → 개발 환경 (둘 다 실행해야 schema.rb 정상)
+
+### 개발 프로세스 교훈 (2026-02-03)
+
+- spec에 없는 필드 발견 시 **절대** 바로 추가하지 말 것
+- "챙겨줘" 같은 요청에도 먼저 사용자에게 보고하고 승인 받아야 함
+- 문서 업데이트 후 **"이제 구현해도 될까요?"** 반드시 질문
+- 승인 없이 진행 → 작업 되돌리기 + AGENTS.md 규칙 강화로 대응

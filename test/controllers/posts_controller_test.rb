@@ -275,6 +275,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal parent.user.username, json["parent"]["user"]["username"]
     assert_equal parent.user.nickname, json["parent"]["user"]["nickname"]
     assert_equal parent.user.avatar_url, json["parent"]["user"]["avatarUrl"]
+
+    # parent에 Post와 동일한 모든 필드 포함 확인
+    assert_nil json["parent"]["videoUrl"]
+    assert_equal parent.depth, json["parent"]["depth"]
+    assert_equal parent.replies_count, json["parent"]["repliesCount"]
+    assert_equal parent.created_at.iso8601, json["parent"]["createdAt"]
+    assert_equal parent.updated_at.iso8601, json["parent"]["updatedAt"]
   end
 
   test "GET /posts/:id - root post has no parent" do

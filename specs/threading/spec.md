@@ -277,6 +277,10 @@ components:
           type: string
           nullable: true
           description: 삭제된 경우 null
+        videoUrl:
+          type: string
+          format: uri
+          nullable: true
         deleted:
           type: boolean
           description: 삭제 여부 (삭제된 경우에만 존재)
@@ -284,6 +288,18 @@ components:
           type: string
           nullable: true
           description: 부모의 부모 ID (더 위에 있는지 힌트)
+        depth:
+          type: integer
+          description: 스레드 깊이
+        repliesCount:
+          type: integer
+          description: 답글 수
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
 
     DeletedPost:
       type: object

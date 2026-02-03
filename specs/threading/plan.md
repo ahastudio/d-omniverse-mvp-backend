@@ -50,6 +50,20 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 - [x] 테스트 수정
 - [x] Fixture 수정 (child_post에 depth 추가)
 
+### Phase 7: 에러 처리 및 최적화 ✅
+
+- [x] 404 에러 처리 (set_post rescue 추가)
+- [x] Fixture ID 길이 통일 (26자)
+- [x] N+1 쿼리 해결 (includes(:parent))
+- [x] ParentPost에 user 정보 추가
+
+### Phase 8: ParentPost 스키마 완성 ✅
+
+- [x] spec.md에 videoUrl, depth, repliesCount, createdAt, updatedAt 추가
+- [x] parent_payload에 5개 필드 추가
+- [x] 테스트 작성 및 통과
+- [x] ParentPost와 Post 스키마 일관성 확보
+
 ## Key Questions
 
 1. 부모 글 삭제 시 자식 글 처리 방법? → Soft Delete로 스레드 구조 유지
