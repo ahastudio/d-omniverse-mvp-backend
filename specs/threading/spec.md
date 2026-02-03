@@ -14,12 +14,12 @@ D-Omniverse 소셜 미디어에 스레드(Threading) 기능을 추가한다. 현
 
 ## 용어 정의
 
-| 용어 | 설명 |
-|------|------|
-| 루트 글 (Root Post) | parent_id가 NULL인 글, 스레드의 시작점 |
-| 자식 글 (Child Post) | parent_id가 있는 글, 다른 글에 연결된 글 |
-| 부모 글 (Parent Post) | 현재 글이 연결된 대상 글 |
-| 스레드 (Thread) | 부모-자식 관계로 연결된 글들의 집합 |
+| 용어                  | 설명                                     |
+| --------------------- | ---------------------------------------- |
+| 루트 글 (Root Post)   | parent_id가 NULL인 글, 스레드의 시작점   |
+| 자식 글 (Child Post)  | parent_id가 있는 글, 다른 글에 연결된 글 |
+| 부모 글 (Parent Post) | 현재 글이 연결된 대상 글                 |
+| 스레드 (Thread)       | 부모-자식 관계로 연결된 글들의 집합      |
 
 ## 데이터 모델
 
@@ -27,8 +27,8 @@ D-Omniverse 소셜 미디어에 스레드(Threading) 기능을 추가한다. 현
 
 기존 posts 테이블에 다음 컬럼을 추가한다:
 
-| 컬럼 | 타입 | 설명 | NULL |
-|------|------|------|------|
+| 컬럼      | 타입   | 설명         | NULL |
+| --------- | ------ | ------------ | ---- |
 | parent_id | string | 부모 글의 ID | 허용 |
 
 ### 제약 조건
@@ -41,7 +41,7 @@ D-Omniverse 소셜 미디어에 스레드(Threading) 기능을 추가한다. 현
 
 ### 1. 글 작성 (기존 확장)
 
-```
+```txt
 POST /posts
 ```
 
@@ -62,7 +62,7 @@ POST /posts
 
 ### 2. 글 목록 조회 (기존 확장)
 
-```
+```txt
 GET /posts
 GET /posts?type=video
 ```
@@ -80,7 +80,7 @@ GET /posts?type=video
 
 ### 3. 단일 글 조회 (신규)
 
-```
+```txt
 GET /posts/:id
 ```
 
@@ -100,7 +100,7 @@ GET /posts/:id
 
 ### 4. 글의 답글 목록 조회 (신규)
 
-```
+```txt
 GET /posts/:id/replies
 ```
 
@@ -108,7 +108,7 @@ GET /posts/:id/replies
 
 ### 5. 스레드 조회 (신규)
 
-```
+```txt
 GET /posts/:id/thread
 ```
 
@@ -124,8 +124,8 @@ GET /posts/:id/thread
 
 ## 카운터 캐싱
 
-| 컬럼 | 설명 |
-|------|------|
+| 컬럼        | 설명                       |
+| ----------- | -------------------------- |
 | reply_count | 자식 글 수 (replies_count) |
 
 ## 삭제 정책

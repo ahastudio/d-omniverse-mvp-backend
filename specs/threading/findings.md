@@ -50,15 +50,15 @@ end
 
 ## Technical Decisions
 
-| Decision                | Rationale              |
-| ----------------------- | ---------------------- |
-| parent_id 자기 참조     | 단순하고 직관적        |
-| Soft Delete             | 스레드 구조 유지       |
-| 자식 글 개수 캐시       | 조회 성능 최적화       |
+| Decision            | Rationale        |
+| ------------------- | ---------------- |
+| parent_id 자기 참조 | 단순하고 직관적  |
+| Soft Delete         | 스레드 구조 유지 |
+| 자식 글 개수 캐시   | 조회 성능 최적화 |
 
 ## Issues Encountered
 
-*(아직 없음)*
+(아직 없음)
 
 ## Resources
 

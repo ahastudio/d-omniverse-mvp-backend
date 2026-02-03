@@ -49,16 +49,16 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 
 ## Decisions Made
 
-| Decision                | Rationale              |
-| ----------------------- | ---------------------- |
-| parent_id 자기 참조     | 단순하고 직관적        |
-| Soft Delete             | 스레드 구조 유지       |
-| 자식 글 개수 캐시       | 조회 성능 최적화       |
+| Decision            | Rationale        |
+| ------------------- | ---------------- |
+| parent_id 자기 참조 | 단순하고 직관적  |
+| Soft Delete         | 스레드 구조 유지 |
+| 자식 글 개수 캐시   | 조회 성능 최적화 |
 
 ## Errors Encountered
 
-| Error              | Attempt | Resolution             |
-| ------------------ | ------- | ---------------------- |
+| Error               | Attempt | Resolution                  |
+| ------------------- | ------- | --------------------------- |
 | bundle install 실패 | 1       | 마이그레이션 파일 직접 생성 |
 
 ## Notes

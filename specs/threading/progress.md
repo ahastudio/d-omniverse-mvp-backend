@@ -20,8 +20,6 @@
 - `specs/threading/findings.md` (새로 생성)
 - `specs/threading/progress.md` (새로 생성)
 
----
-
 ## Session 2026-01-28
 
 ### Phase 3: Implementation ✅
@@ -57,26 +55,24 @@
 - `test/models/post_test.rb` (수정)
 - `test/controllers/posts_controller_test.rb` (수정)
 
----
-
 ## Test Results
 
-| Test                          | Input       | Expected    | Actual | Status |
-| ----------------------------- | ----------- | ----------- | ------ | ------ |
-| 테스트 실행 필요              | -           | -           | -      | ⏸️     |
+| Test             | Input | Expected | Actual | Status |
+| ---------------- | ----- | -------- | ------ | ------ |
+| 테스트 실행 필요 | -     | -        | -      | ⏸️     |
 
 ## Error Log
 
-| Timestamp        | Error              | Attempt | Resolution             |
-| ---------------- | ------------------ | ------- | ---------------------- |
+| Timestamp        | Error               | Attempt | Resolution                  |
+| ---------------- | ------------------- | ------- | --------------------------- |
 | 2026-01-28 00:00 | bundle install 실패 | 1       | 마이그레이션 파일 직접 생성 |
 
 ## 5-Question Reboot Check
 
-| Question               | Answer                                           |
-| ---------------------- | ------------------------------------------------ |
-| 1. 현재 어느 단계인가? | Phase 4 진행 중, 테스트 실행 필요                |
-| 2. 다음에 할 일은?     | 테스트 실행, PR 생성                             |
-| 3. 목표는?             | parent_id로 글들을 연결하는 스레드 기능          |
-| 4. 지금까지 배운 것?   | See findings.md                                  |
+| Question               | Answer                                            |
+| ---------------------- | ------------------------------------------------- |
+| 1. 현재 어느 단계인가? | Phase 4 진행 중, 테스트 실행 필요                 |
+| 2. 다음에 할 일은?     | 테스트 실행, PR 생성                              |
+| 3. 목표는?             | parent_id로 글들을 연결하는 스레드 기능           |
+| 4. 지금까지 배운 것?   | See findings.md                                   |
 | 5. 완료한 작업은?      | 마이그레이션, 모델, 컨트롤러, 라우트, 테스트 작성 |
