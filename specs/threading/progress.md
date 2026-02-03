@@ -124,14 +124,33 @@
 - `specs/threading/findings.md` (수정 - 스키마 일관성 결정 추가)
 - `specs/threading/progress.md` (수정 - Phase 8 추가)
 
+### Phase 9: N+1 쿼리 종합 최적화 ✅
+
+**작업 내역**:
+
+1. parent.user 접근 시 N+1 쿼리 가능성 발견
+2. index 액션: includes(:user, parent: :user)로 중첩 eager loading 구현
+3. replies 액션: includes(:user, parent: :user) 추가
+4. thread 액션: includes(:user, parent: :user) 추가
+5. N+1 검증 테스트 3개 추가 (index parent user, replies, thread)
+6. 전체 테스트 통과 확인 (86 pass, 233 assertions)
+
+**생성/수정 파일**:
+
+- `app/controllers/posts_controller.rb` (수정 - 3개 액션 모두 includes parent: :user)
+- `test/controllers/posts_controller_test.rb` (수정 - N+1 테스트 3개 추가)
+- `specs/threading/findings.md` (수정 - N+1 최적화 learnings)
+- `specs/threading/progress.md` (수정 - Phase 9 추가)
+- `specs/threading/plan.md` (수정 - Phase 9 추가)
+
 ## Test Results
 
 | Test       | Input | Expected | Actual | Status |
 | ---------- | ----- | -------- | ------ | ------ |
-| 전체 실행  | -     | 83 pass  | 83     | ✅     |
-| assertions | -     | 224 pass | 224    | ✅     |
+| 전체 실행  | -     | 86 pass  | 86     | ✅     |
+| assertions | -     | 233 pass | 233    | ✅     |
 | 모델       | -     | 14 pass  | 14     | ✅     |
-| 컨트롤러   | -     | 29 pass  | 29     | ✅     |
+| 컨트롤러   | -     | 32 pass  | 32     | ✅     |
 
 ## Error Log
 
@@ -141,10 +160,10 @@
 
 ## 5-Question Reboot Check
 
-| Question               | Answer                                           |
-| ---------------------- | ------------------------------------------------ |
-| 1. 현재 어느 단계인가? | 완료                                             |
-| 2. 다음에 할 일은?     | -                                                |
-| 3. 목표는?             | 스레드 기능 구현 완료                            |
-| 4. 지금까지 배운 것?   | See findings.md                                  |
-| 5. 완료한 작업은?      | 스레드 기능 전체 구현 (TDD, 최적화, 스키마 완성) |
+| Question               | Answer                                                            |
+| ---------------------- | ----------------------------------------------------------------- |
+| 1. 현재 어느 단계인가? | 완료                                                              |
+| 2. 다음에 할 일은?     | -                                                                 |
+| 3. 목표는?             | 스레드 기능 구현 완료                                             |
+| 4. 지금까지 배운 것?   | See findings.md                                                   |
+| 5. 완료한 작업은?      | 스레드 기능 전체 구현 (TDD, N+1 종합 최적화, API 스키마 일관성)   |

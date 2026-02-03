@@ -32,7 +32,8 @@ class PostsController < ApplicationController
   end
 
   def replies
-    @replies = @post.replies.visible.includes(:user).order(id: :asc)
+    @replies = @post.replies.visible.includes(:user, parent: :user)
+                     .order(id: :asc)
 
     render json: @replies.map { |post| post_payload(post) }
   end
@@ -41,7 +42,8 @@ class PostsController < ApplicationController
     render json: {
       ancestors: @post.ancestors.map { |post| post_payload(post) },
       post: post_payload(@post),
-      replies: @post.replies.visible.includes(:user).order(id: :asc)
+      replies: @post.replies.visible.includes(:user, parent: :user)
+                    .order(id: :asc)
                     .map { |post| post_payload(post) }
     }
   end
@@ -61,7 +63,7 @@ private
   end
 
   def set_posts
-    @posts = Post.visible.includes(:user, :parent)
+    @posts = Post.visible.includes(:user, parent: :user)
     @posts = filter_by_username
     @posts = @posts.where.not(video_url: nil) if params[:type] == "video"
   end

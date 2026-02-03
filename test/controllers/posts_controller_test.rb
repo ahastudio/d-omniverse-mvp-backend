@@ -508,4 +508,78 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_operator parent_queries.length, :<=, 2,
                     "N+1 없이 최대 2개 쿼리여야 함. 실제: #{parent_queries.length}"
   end
+
+  test "GET /posts - no N+1 query for parent user loading" do
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get posts_url(limit: 10), as: :json
+    end
+
+    assert_response :ok
+
+    # users 쿼리 분석
+    user_queries = queries.select { |q| q.include?("SELECT") && q.include?("users") }
+
+    # includes(:user, parent: :user)를 사용하면:
+    # 1. 메인 posts의 users 쿼리
+    # 2. parents의 users 쿼리
+    # parent 개수만큼 추가 user 쿼리가 발생하지 않음 (N+1 방지)
+    assert_operator user_queries.length, :<=, 2,
+                    "N+1 없이 최대 2개 user 쿼리여야 함. 실제: #{user_queries.length}"
+  end
+
+  test "GET /posts/:id/replies - no N+1 query" do
+    parent = posts(:parent_post)
+
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get replies_post_url(parent), as: :json
+    end
+
+    assert_response :ok
+
+    # SELECT 쿼리 분석
+    select_queries = queries.select { |q| q.include?("SELECT") }
+
+    # includes(:user, parent: :user)를 사용하면:
+    # 1. parent 조회 (set_post)
+    # 2. replies 쿼리
+    # 3. replies의 users 쿼리
+    # 4. replies의 parents 쿼리 (parent는 동일)
+    # 5. parents의 users 쿼리
+    # 답글 개수만큼 추가 쿼리 발생하지 않음
+    assert_operator select_queries.length, :<=, 5,
+                    "N+1 없이 최대 5개 쿼리여야 함. 실제: #{select_queries.length}"
+  end
+
+  test "GET /posts/:id/thread - no N+1 query" do
+    child = posts(:child_post)
+
+    queries = []
+    callback = lambda { |*, payload|
+      queries << payload[:sql] if payload[:sql] !~ /^(BEGIN|COMMIT|PRAGMA)/
+    }
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      get thread_post_url(child), as: :json
+    end
+
+    assert_response :ok
+
+    # SELECT 쿼리 분석
+    select_queries = queries.select { |q| q.include?("SELECT") }
+
+    # ancestors, post, replies 모두 parent 정보 접근
+    # includes(:user, parent: :user) 없이는 N+1 발생
+    assert_operator select_queries.length, :<=, 6,
+                    "N+1 없이 최대 6개 쿼리여야 함. 실제: #{select_queries.length}"
+  end
 end

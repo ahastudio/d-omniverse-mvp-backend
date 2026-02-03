@@ -64,6 +64,14 @@ D-Omniverse에 스레드 기능을 추가하여 글들이 `parent_id`로 서로 
 - [x] 테스트 작성 및 통과
 - [x] ParentPost와 Post 스키마 일관성 확보
 
+### Phase 9: N+1 쿼리 종합 최적화 ✅
+
+- [x] index 액션: includes(:user, parent: :user)
+- [x] replies 액션: includes(:user, parent: :user)
+- [x] thread 액션: includes(:user, parent: :user)
+- [x] 모든 액션에서 중첩 eager loading 적용
+- [x] N+1 검증 테스트 3개 추가
+
 ## Key Questions
 
 1. 부모 글 삭제 시 자식 글 처리 방법? → Soft Delete로 스레드 구조 유지
