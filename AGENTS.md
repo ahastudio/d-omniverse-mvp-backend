@@ -53,6 +53,14 @@ Think before you act.**
 
 ### 구현 전 필수 확인
 
+스펙 검토 및 승인 없이 구현 시작 절대 금지:
+
+- 새로운 기능 요청 시 **반드시** spec.md 먼저 작성/업데이트
+- 사용자가 스펙을 검토하고 승인할 때까지 **절대** 코드 작성 금지
+- 스펙 승인 후 plan.md, findings.md, progress.md 작성/업데이트
+  (3-File Pattern)
+- 사용자가 plan 등을 검토하고 승인한 후에만 구현 시작
+- 구현 순서: spec.md 검토 → 3-File Pattern 검토 → 구현
 - 문제 맥락, 요구사항, 기존 코드 흐름 파악
 - 확신 없으면 추측 금지 → 즉시 사용자 확인
 - 기존 코드/텍스트 임의 변경 금지 → 먼저 확인
@@ -62,9 +70,36 @@ Think before you act.**
 - "정리"나 "cleanup" 요청 시: 실제로 문제 있는지 먼저 확인
   (멀쩡한 코드를 멋대로 바꾸는 건 망가뜨리는 것)
 
+### TDD (Test-Driven Development)
+
+**Red-Green-Refactor 사이클 준수:**
+
+1. **Red**: 실패하는 테스트 먼저 작성
+2. **Green**: 테스트를 통과시킬 최소한의 코드 작성
+3. **Refactor**: 테스트가 통과한 후 코드 개선
+
+**Outside-In 방식:**
+
+- 컨트롤러 테스트부터 시작
+- 밖(API/컨트롤러)에서 안(모델/비즈니스 로직)으로 진행
+- 각 계층의 테스트를 먼저 작성하고 구현
+
+**구현 순서:**
+
+1. 컨트롤러 테스트 작성 (실패 확인)
+2. 컨트롤러 구현 (테스트 통과)
+3. 필요시 모델 테스트 작성 및 구현
+4. Refactor (중복 제거, 가독성 개선)
+
 ### 코드 스타일
 
 - Ruby 코드는 가로 80컬럼 제한
+- **메서드는 5줄 이내** (def/end 제외) - 길면 extract method
+- **자명한 이름 사용** - 구현 방식(HOW)이 아닌 의도(WHAT)를 표현
+  - 나쁜 예: `raise_if_self_target!` (구현 설명)
+  - 좋은 예: `ensure_not_self!` (의도 표현)
+- **named parameter 사용** - 파라미터 2개 이상이면 명시적으로
+- `class << self` 블록으로 클래스 메서드 그룹화 (private 포함)
 - `else` 사용 금지 (early return이나 guard clause 사용)
 - `return render` 및 유사 패턴 금지 (render 후 별도 줄에 return)
 - `before_action` 적극 활용하여 로직 분리
