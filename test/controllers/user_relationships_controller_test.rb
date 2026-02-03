@@ -14,9 +14,11 @@ class UserRelationshipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     data = JSON.parse(response.body)
-    assert_equal 1, data["relationships"].length
+    assert_equal 2, data["relationships"].length
     assert_equal "dancer", data["relationships"][0]["username"]
     assert_equal 5, data["relationships"][0]["score"]
+    assert_equal "creator", data["relationships"][1]["username"]
+    assert_equal 3, data["relationships"][1]["score"]
   end
 
   test "GET /user-relationships - other user relationships" do
@@ -31,11 +33,12 @@ class UserRelationshipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     data = JSON.parse(response.body)
-    assert_equal 0, data["relationships"].length
+    assert_equal 1, data["relationships"].length
+    assert_equal "creator", data["relationships"][0]["username"]
   end
 
   test "GET /user-relationships - no relationships" do
-    user = users(:dancer)
+    user = users(:creator)
     token = user.generate_token
 
     get user_relationships_url,
@@ -76,8 +79,9 @@ class UserRelationshipsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     data = JSON.parse(response.body)
-    assert_equal 1, data["relationships"].length
+    assert_equal 2, data["relationships"].length
     assert_equal 5, data["relationships"][0]["score"]
+    assert_equal 3, data["relationships"][1]["score"]
   end
 
   # show

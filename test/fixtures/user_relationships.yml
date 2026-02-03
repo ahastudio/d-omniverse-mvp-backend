@@ -6,3 +6,16 @@ admin_to_dancer:
   user_id: 01JCS1234567890ABCDEFGHM001
   target_user_id: 01JCS1234567890ABCDEFGHM002
   score: 5
+
+admin_to_creator:
+  id: 01JCS1234567890ABCDEFREL02
+  user_id: 01JCS1234567890ABCDEFGHM001
+  target_user_id: 01JCS1234567890ABCDEFGHM003
+  score: 3
+
+# 친구의 친구 테스트용: dancer → creator (admin의 친구가 creator와 관계)
+dancer_to_creator:
+  id: 01JCS1234567890ABCDEFREL03
+  user_id: 01JCS1234567890ABCDEFGHM002
+  target_user_id: 01JCS1234567890ABCDEFGHM003
+  score: 10

@@ -20,3 +20,32 @@ dancer_intro:
   video_url: https://cloudinary-marketing-res.cloudinary.com/video/upload/c_fill,g_auto,ar_1:2,w_500/v1737662630/dynamic-overlays-hero.mp4
   created_at: 2025-01-15 10:00:00 Z
   updated_at: 2025-01-15 10:00:00 Z
+
+creator_post:
+  id: 01JCSPOST0000000000000004
+  user_id: 01JCS1234567890ABCDEFGHM003
+  content: Creator's latest work
+  created_at: 2025-01-20 14:00:00 Z
+  updated_at: 2025-01-20 14:00:00 Z
+
+# Author Diversity 테스트용 추가 게시물
+dancer_post2:
+  id: 01JCSPOST0000000000000005
+  user_id: 01JCS1234567890ABCDEFGHM002
+  content: Dancer's second post
+  created_at: 2025-01-14 10:00:00 Z
+  updated_at: 2025-01-14 10:00:00 Z
+
+dancer_post3:
+  id: 01JCSPOST0000000000000006
+  user_id: 01JCS1234567890ABCDEFGHM002
+  content: Dancer's third post
+  created_at: 2025-01-13 10:00:00 Z
+  updated_at: 2025-01-13 10:00:00 Z
+
+creator_post2:
+  id: 01JCSPOST0000000000000007
+  user_id: 01JCS1234567890ABCDEFGHM003
+  content: Creator's second post
+  created_at: 2025-01-19 14:00:00 Z
+  updated_at: 2025-01-19 14:00:00 Z

@@ -19,3 +19,13 @@ dancer:
   nickname: DanceMaster
   bio: Professional dancer
   avatar_url: https://example.com/dancer.jpg
+
+creator:
+  id: 01JCS1234567890ABCDEFGHM003
+  username: creator
+  password_digest: <%= Argon2::Password.create('password123').to_s %>
+  name: Creator
+  phone_number: "010-5555-6666"
+  nickname: ContentCreator
+  bio: Content creator
+  avatar_url: https://example.com/creator.jpg

@@ -41,7 +41,7 @@ private
   end
 
   def set_posts
-    @posts = Post.visible.includes(:user).order(id: :desc)
+    @posts = Post.visible.includes(:user).feed_ordered_for(current_user)
     @posts = @posts.where.not(video_url: nil) if params[:type] == "video"
   end
 
