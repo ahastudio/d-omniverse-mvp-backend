@@ -17,6 +17,6 @@ Rails.application.routes.draw do
 
   resources :posts, only: [ :index, :create, :destroy ]
 
-  resources :user_relationships, only: [ :create, :show ],
+  resources :user_relationships, only: [ :index, :create, :show ],
             path: "user-relationships"
 end

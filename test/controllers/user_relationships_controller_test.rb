@@ -1,6 +1,138 @@
 require "test_helper"
 
 class UserRelationshipsControllerTest < ActionDispatch::IntegrationTest
+  # index
+
+  test "GET /user-relationships - own relationships" do
+    user = users(:admin)
+    token = user.generate_token
+
+    get user_relationships_url,
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    assert_equal 1, data["relationships"].length
+    assert_equal "dancer", data["relationships"][0]["username"]
+    assert_equal 5, data["relationships"][0]["score"]
+  end
+
+  test "GET /user-relationships - other user relationships" do
+    user = users(:admin)
+    target = users(:dancer)
+    token = user.generate_token
+
+    get user_relationships_url(userId: target.id),
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    assert_equal 0, data["relationships"].length
+  end
+
+  test "GET /user-relationships - no relationships" do
+    user = users(:dancer)
+    token = user.generate_token
+
+    get user_relationships_url,
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    assert_equal 0, data["relationships"].length
+  end
+
+  test "GET /user-relationships - user not found" do
+    user = users(:admin)
+    token = user.generate_token
+
+    get user_relationships_url(userId: "nonexistent"),
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :not_found
+  end
+
+  test "GET /user-relationships - unauthorized" do
+    get user_relationships_url, as: :json
+
+    assert_response :unauthorized
+  end
+
+  test "GET /user-relationships - sorted by score" do
+    user = users(:admin)
+    token = user.generate_token
+
+    get user_relationships_url,
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    assert_equal 1, data["relationships"].length
+    assert_equal 5, data["relationships"][0]["score"]
+  end
+
+  # show
+
+  test "GET /user-relationships/:id - existing relationship" do
+    user = users(:admin)
+    target = users(:dancer)
+    token = user.generate_token
+
+    get user_relationship_url(target.id),
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    assert_equal 5, data["score"]
+  end
+
+  test "GET /user-relationships/:id - no relationship" do
+    user = users(:dancer)
+    target = users(:admin)
+    token = user.generate_token
+
+    get user_relationship_url(target.id),
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :ok
+
+    data = JSON.parse(response.body)
+    assert_equal 0, data["score"]
+  end
+
+  test "GET /user-relationships/:id - unauthorized" do
+    target = users(:dancer)
+
+    get user_relationship_url(target.id), as: :json
+
+    assert_response :unauthorized
+  end
+
+  test "GET /user-relationships/:id - target not found" do
+    user = users(:admin)
+    token = user.generate_token
+
+    get user_relationship_url("nonexistent"),
+        headers: { "Authorization": "Bearer #{token}" },
+        as: :json
+
+    assert_response :not_found
+  end
+
+  # create
+
   test "POST /user-relationships - profile_view" do
     user = users(:admin)
     target = users(:dancer)
@@ -96,55 +228,6 @@ class UserRelationshipsControllerTest < ActionDispatch::IntegrationTest
          as: :json
 
     assert_response :unauthorized
-  end
-
-  test "GET /user-relationships/:id - existing relationship" do
-    user = users(:admin)
-    target = users(:dancer)
-    token = user.generate_token
-
-    get user_relationship_url(target.id),
-        headers: { "Authorization": "Bearer #{token}" },
-        as: :json
-
-    assert_response :ok
-
-    data = JSON.parse(response.body)
-    assert_equal 5, data["score"]
-  end
-
-  test "GET /user-relationships/:id - no relationship" do
-    user = users(:dancer)
-    target = users(:admin)
-    token = user.generate_token
-
-    get user_relationship_url(target.id),
-        headers: { "Authorization": "Bearer #{token}" },
-        as: :json
-
-    assert_response :ok
-
-    data = JSON.parse(response.body)
-    assert_equal 0, data["score"]
-  end
-
-  test "GET /user-relationships/:id - unauthorized" do
-    target = users(:dancer)
-
-    get user_relationship_url(target.id), as: :json
-
-    assert_response :unauthorized
-  end
-
-  test "GET /user-relationships/:id - target not found" do
-    user = users(:admin)
-    token = user.generate_token
-
-    get user_relationship_url("nonexistent"),
-        headers: { "Authorization": "Bearer #{token}" },
-        as: :json
-
-    assert_response :not_found
   end
 
   test "POST /user-relationships - score accumulates" do

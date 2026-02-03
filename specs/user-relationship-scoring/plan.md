@@ -16,7 +16,7 @@
 
 ## Current Phase
 
-Phase 6: Feature Extension (진행 중)
+✅ 완료
 
 ## Phases
 
@@ -52,13 +52,13 @@ Phase 6: Feature Extension (진행 중)
 - [x] 문서 업데이트
 - [x] 커밋 및 푸시
 
-### Phase 6: Feature Extension (진행 중)
+### Phase 6: Feature Extension ✅
 
-- [ ] 관계 목록 조회 API 요구사항 분석
-- [ ] index 액션 설계 (userId 파라미터 처리)
-- [ ] UserRelationship 모델에 target_user 관계 추가
-- [ ] index 액션 구현
-- [ ] 테스트 작성 및 실행
+- [x] 관계 목록 조회 API 요구사항 분석
+- [x] index 액션 설계 (userId 파라미터 처리)
+- [x] UserRelationship 모델에 target_user 관계 추가
+- [x] index 액션 구현
+- [x] 테스트 작성 및 실행
 
 ## Technical Context
 

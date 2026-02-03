@@ -7,12 +7,12 @@
 
 - [x] POST `/user-relationships` 엔드포인트 제공
 - [x] GET `/user-relationships/:target_user_id` 엔드포인트 제공
-- [ ] GET `/user-relationships?userId=<user_id>` 엔드포인트 제공
+- [x] GET `/user-relationships?userId=<user_id>` 엔드포인트 제공
 - [x] interaction type별 점수 차등 부여
 - [x] 자기 자신에 대한 interaction 거부
 - [x] 인증 필수
-- [ ] 특정 사용자의 관계 목록 조회 (점수 높은 순)
-- [ ] 대상 사용자 정보 포함 (id, username, nickname, avatarUrl,
+- [x] 특정 사용자의 관계 목록 조회 (점수 높은 순)
+- [x] 대상 사용자 정보 포함 (id, username, nickname, avatarUrl,
   score)
 
 ## Research Findings

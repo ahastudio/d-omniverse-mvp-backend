@@ -1,7 +1,27 @@
 class UserRelationshipsController < ApplicationController
   before_action :login_required
   before_action :set_target_user, only: [ :create, :show ]
+  before_action :set_user_for_index, only: [ :index ]
   before_action :validate_interaction_type, only: [ :create ]
+
+  def index
+    relationships = UserRelationship
+      .includes(:target_user)
+      .where(user_id: @user.id)
+      .order(score: :desc)
+
+    render json: {
+      relationships: relationships.map do |rel|
+        {
+          id: rel.target_user.id,
+          username: rel.target_user.username,
+          nickname: rel.target_user.nickname,
+          profileImageUrl: rel.target_user.avatar_url,
+          score: rel.score
+        }
+      end
+    }, status: :ok
+  end
 
   def show
     score = UserRelationship.score_for(
@@ -26,6 +46,13 @@ class UserRelationshipsController < ApplicationController
   end
 
 private
+
+  def set_user_for_index
+    user_id = params[:userId] || current_user.id
+    @user = User.find(user_id)
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "User not found" }, status: :not_found
+  end
 
   def set_target_user
     target_id = params[:targetUserId] || params[:id]
