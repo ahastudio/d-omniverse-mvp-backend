@@ -50,7 +50,7 @@ class UserRelationship < ApplicationRecord
     def build_upsert_sql(user_id:, target_user_id:, score:)
       t = Time.current
       sanitize_sql_array(
-        [UPSERT_SQL, ULID.generate, user_id, target_user_id, score, t, t, score, t]
+        [ UPSERT_SQL, ULID.generate, user_id, target_user_id, score, t, t, score, t ]
       )
     end
 

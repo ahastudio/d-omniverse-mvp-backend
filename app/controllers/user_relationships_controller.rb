@@ -1,7 +1,7 @@
 class UserRelationshipsController < ApplicationController
   before_action :login_required
+  before_action :set_user, only: [ :index ]
   before_action :set_target_user, only: [ :create, :show ]
-  before_action :set_user_for_index, only: [ :index ]
   before_action :validate_interaction_type, only: [ :create ]
 
   def index
@@ -20,7 +20,7 @@ class UserRelationshipsController < ApplicationController
           score: rel.score
         }
       end
-    }, status: :ok
+    }
   end
 
   def show
@@ -29,7 +29,7 @@ class UserRelationshipsController < ApplicationController
       target_user_id: @target_user.id
     )
 
-    render json: { score: score }, status: :ok
+    render json: { score: score }
   end
 
   def create
@@ -47,7 +47,7 @@ class UserRelationshipsController < ApplicationController
 
 private
 
-  def set_user_for_index
+  def set_user
     user_id = params[:userId] || current_user.id
     @user = User.find(user_id)
   rescue ActiveRecord::RecordNotFound

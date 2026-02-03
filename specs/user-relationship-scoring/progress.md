@@ -80,7 +80,7 @@
 
 ## Session 2026-02-03
 
-### Phase 6: Feature Extension (진행 중)
+### Phase 6: Feature Extension ✅
 
 **작업 내역**:
 
@@ -91,12 +91,19 @@
    - 대상 사용자 정보 포함 (id, username, nickname, avatarUrl,
      score)
 2. 3-File Pattern 업데이트 (plan.md, findings.md, progress.md)
-
-**대기 중**:
-
-- [ ] UserRelationship 모델에 target_user 관계 추가
-- [ ] index 액션 구현
-- [ ] 테스트 작성 및 실행
+3. routes.rb에 index 액션 추가
+4. UserRelationshipsController에 index 액션 구현
+   - userId 쿼리 파라미터 처리 (선택적)
+   - includes(:target_user)로 N+1 쿼리 방지
+   - order(score: :desc)로 정렬
+   - User.find로 404 자동 처리
+5. 테스트 작성 및 실행 (6개 추가, 총 18개 테스트 모두 통과)
+   - 자신의 관계 목록 조회
+   - 다른 사용자 관계 목록 조회
+   - 관계 없는 경우
+   - 사용자 없는 경우 (404)
+   - 인증 없는 경우 (401)
+   - 점수 내림차순 정렬 확인
 
 **생성/수정 파일**:
 
@@ -104,6 +111,9 @@
 - `specs/user-relationship-scoring/plan.md` (수정)
 - `specs/user-relationship-scoring/findings.md` (수정)
 - `specs/user-relationship-scoring/progress.md` (수정)
+- `config/routes.rb` (수정)
+- `app/controllers/user_relationships_controller.rb` (수정)
+- `test/controllers/user_relationships_controller_test.rb` (수정)
 
 ## Test Results
 
@@ -119,6 +129,12 @@
 | 점수 조회 (기존)        | GET /:id               | 200 OK, score=5     | 200, 5        | ✅     |
 | 점수 조회 (없음)        | GET /:id (no rel)      | 200 OK, score=0     | 200, 0        | ✅     |
 | 점수 누적               | 3x profile_view        | score=8 (5+3)       | 8             | ✅     |
+| 자신의 관계 목록        | GET /                  | 200 OK, 1개         | 200, 1개      | ✅     |
+| 다른 사용자 관계 목록   | GET /?userId=X         | 200 OK, 0개         | 200, 0개      | ✅     |
+| 관계 없는 경우          | GET /                  | 200 OK, []          | 200, []       | ✅     |
+| 존재하지 않는 사용자    | GET /?userId=invalid   | 404 Not Found       | 404           | ✅     |
+| 목록 조회 unauthorized  | GET / (no token)       | 401 Unauthorized    | 401           | ✅     |
+| 점수 내림차순 정렬      | GET /                  | 정렬된 목록         | 정렬됨        | ✅     |
 
 ## Error Log
 
@@ -132,8 +148,8 @@
 
 | Question                | Answer                                  |
 | ----------------------- | --------------------------------------- |
-| 1. 현재 어느 단계인가?  | Phase 6: Feature Extension (진행 중)    |
-| 2. 다음에 할 일은?      | index 액션 구현 및 테스트               |
-| 3. 목표는?              | 관계 목록 조회 API 추가                 |
+| 1. 현재 어느 단계인가?  | ✅ Phase 6 완료                         |
+| 2. 다음에 할 일은?      | 커밋 및 문서 정리                       |
+| 3. 목표는?              | 관계 목록 조회 API 추가 ✅              |
 | 4. 지금까지 배운 것?    | See findings.md                         |
 | 5. 완료한 작업은?       | See above                               |
