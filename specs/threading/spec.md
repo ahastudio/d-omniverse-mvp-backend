@@ -261,6 +261,18 @@ components:
       properties:
         id:
           type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+            nickname:
+              type: string
+            avatarUrl:
+              type: string
+              nullable: true
         content:
           type: string
           nullable: true

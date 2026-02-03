@@ -131,13 +131,29 @@
 - `app/controllers/posts_controller.rb` (수정 - includes(:parent) 추가)
 - `test/controllers/posts_controller_test.rb` (수정 - N+1 테스트 추가)
 
+### Phase 10: ParentPost에 user 정보 추가 ✅
+
+**작업 내역**:
+
+1. spec.md ParentPost 스키마에 user 필드 추가
+2. 기존 테스트에 parent.user 검증 추가
+3. `parent_payload`에 user 정보 (id, username, nickname, avatarUrl) 포함
+4. 부모 글 작성자 정보 노출
+
+**생성/수정 파일**:
+
+- `specs/threading/spec.md` (수정 - ParentPost user avatarUrl 추가)
+- `app/controllers/posts_controller.rb` (수정 - parent_payload avatarUrl 추가)
+- `test/controllers/posts_controller_test.rb` (수정 - avatarUrl 검증 추가)
+
 ## Test Results
 
-| Test      | Input | Expected | Actual | Status |
-| --------- | ----- | -------- | ------ | ------ |
-| 전체 실행 | -     | 83 pass  | 83     | ✅     |
-| 모델      | -     | 14 pass  | 14     | ✅     |
-| 컨트롤러  | -     | 29 pass  | 29     | ✅     |
+| Test       | Input | Expected | Actual | Status |
+| ---------- | ----- | -------- | ------ | ------ |
+| 전체 실행  | -     | 83 pass  | 83     | ✅     |
+| assertions | -     | 219 pass | 219    | ✅     |
+| 모델       | -     | 14 pass  | 14     | ✅     |
+| 컨트롤러   | -     | 29 pass  | 29     | ✅     |
 
 ## Error Log
 

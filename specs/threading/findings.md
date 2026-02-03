@@ -61,15 +61,15 @@ end
 
 ## Issues Encountered
 
-| Issue                                | Resolution                       |
-| ------------------------------------ | -------------------------------- |
-| bundle install 실패                  | 마이그레이션 파일 직접 생성      |
-| fixture ID 순서 문제                 | ULID가 피드 알고리즘에 영향, ID  |
-|                                      | 수정                             |
-| parent_payload 무한재귀              | 간략한 ParentPost 스키마로 분리  |
-| 존재하지 않는 게시물 404에러         | set_post에 rescue 처리 추가      |
-| fixture ID 길이 불일치               | 모든 ID를 26자로 통일 (008, 009) |
-| post_payload에서 parent N+1 쿼리     | includes(:user, :parent) 추가    |
+| Issue                            | Resolution                       |
+| -------------------------------- | -------------------------------- |
+| bundle install 실패              | 마이그레이션 파일 직접 생성      |
+| fixture ID 순서 문제             | ULID가 피드 알고리즘에 영향, ID  |
+|                                  | 수정                             |
+| parent_payload 무한재귀          | 간략한 ParentPost 스키마로 분리  |
+| 존재하지 않는 게시물 404에러     | set_post에 rescue 처리 추가      |
+| fixture ID 길이 불일치           | 모든 ID를 26자로 통일 (008, 009) |
+| post_payload에서 parent N+1 쿼리 | includes(:user, :parent) 추가    |
 
 ## Resources
 
@@ -133,6 +133,11 @@ end
 - `includes(:user, :parent)`로 preload하면 O(1) 쿼리로 최적화
 - `includes`는 별도 쿼리로 로드하지만 N+1을 방지 (메인 1개 + preload 1개 = 총 2개)
 - ActiveSupport::Notifications로 쿼리 수 검증 테스트 작성 가능
+
+### API 스키마 일관성 (2026-02-03)
+
+- ParentPost에도 user 정보 포함 필요 (UI에서 작성자 표시)- user 객체는 일관되게 id, username, nickname, avatarUrl 포함- 스키마 변경 시 spec.md 먼저 업데이트 후 구현
+- parent.user는 includes로 preload되어 추가 쿼리 없음
 
 ### 확장 (2026-02-03)
 

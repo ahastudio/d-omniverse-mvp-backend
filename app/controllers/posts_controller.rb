@@ -119,6 +119,12 @@ private
 
     {
       id: parent.id,
+      user: {
+        id: parent.user.id,
+        username: parent.user.username,
+        nickname: parent.user.nickname,
+        avatarUrl: parent.user.avatar_url
+      },
       content: parent.deleted? ? nil : parent.content,
       deleted: parent.deleted? || nil,
       parentId: parent.parent_id
