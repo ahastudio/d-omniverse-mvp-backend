@@ -8,8 +8,8 @@
 
 ## Goal
 
-POST `/user-relationships` 및 GET `/user-relationships/:target_user_id`
-API 구현 완료
+POST `/user-relationships` 및 GET
+`/user-relationships/:target_user_id` API 구현 완료
 
 ## Current Phase
 
@@ -65,13 +65,13 @@ API 구현 완료
 
 ### Key Decisions
 
-| Decision               | Rationale                                   |
-| ---------------------- | ------------------------------------------- |
-| 단일 테이블 설계       | 단순한 점수 누적, 복잡한 로그 불필요        |
-| 복합 unique 인덱스     | (user_id, target_user_id) 중복 방지         |
-| 점수 누적 방식         | 매 interaction마다 기존 점수에 합산         |
-| type별 점수 차등       | profile_view: 1, reaction: 2, post_view: 1  |
-| 양방향 별도 관리       | A→B와 B→A는 독립적인 관계                   |
+| Decision            | Rationale                               |
+| ------------------- | --------------------------------------- |
+| 단일 테이블 설계    | 단순한 점수 누적, 복잡한 로그 불필요    |
+| 복합 unique 인덱스  | (user_id, target_user_id) 중복 방지     |
+| 점수 누적 방식      | 매 interaction마다 기존 점수에 합산     |
+| type별 점수 차등    | profile_view: 1, reaction: 2, post_view |
+| 양방향 별도 관리    | A→B와 B→A는 독립적인 관계               |
 
 ## Project Structure
 
@@ -87,7 +87,8 @@ config/
 └── routes.rb  (수정)
 db/
 └── migrate/
-    └── 20260202100000_create_user_relationships.rb  (새로 생성)
+    └── 20260202100000_create_user_relationships.rb
+        (새로 생성)
 test/
 ├── controllers/
 │   └── user_relationships_controller_test.rb  (새로 생성)
@@ -102,17 +103,17 @@ test/
 
 ## Decisions Made
 
-| Decision                       | Rationale                                |
-| ------------------------------ | ---------------------------------------- |
-| UserRelationship 모델 생성     | 관계 점수 전용 테이블로 관심사 분리      |
-| 점수 0 기본값                  | 관계가 없으면 0점으로 간주               |
-| camelCase API 파라미터         | 기존 API 컨벤션 따름                     |
+| Decision                   | Rationale                           |
+| -------------------------- | ----------------------------------- |
+| UserRelationship 모델 생성 | 관계 점수 전용 테이블로 관심사 분리 |
+| 점수 0 기본값              | 관계가 없으면 0점으로 간주          |
+| camelCase API 파라미터     | 기존 API 컨벤션 따름                |
 
 ## Errors Encountered
 
-| Error | Attempt | Resolution |
-| ----- | ------- | ---------- |
-| params 키 불일치 | 1 | params[:targetUserId]로 수정 |
+| Error            | Attempt | Resolution                   |
+| ---------------- | ------- | ---------------------------- |
+| params 키 불일치 | 1       | params[:targetUserId]로 수정 |
 
 ## Notes
 

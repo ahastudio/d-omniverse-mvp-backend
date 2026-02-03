@@ -25,7 +25,8 @@
 **작업 내역**:
 
 1. 데이터베이스 스키마 설계 (user_relationships 테이블)
-2. 라우팅 설계 (POST /user-relationships, GET /user-relationships/:id)
+2. 라우팅 설계 (POST /user-relationships, GET
+   /user-relationships/:id)
 3. 컨트롤러 액션 설계 (create, show)
 4. 점수 계산 로직 설계 (INTERACTION_SCORES 상수)
 
@@ -50,7 +51,8 @@
 **작업 내역**:
 
 1. 테스트 fixture 작성 (`test/fixtures/user_relationships.yml`)
-2. 컨트롤러 테스트 작성 (`user_relationships_controller_test.rb`)
+2. 컨트롤러 테스트 작성
+   (`user_relationships_controller_test.rb`)
 3. 12개 테스트 케이스 작성 및 통과
    - profile_view 점수 기록
    - reaction 점수 기록
@@ -66,7 +68,8 @@
 **생성/수정 파일**:
 
 - `test/fixtures/user_relationships.yml` (새로 생성)
-- `test/controllers/user_relationships_controller_test.rb` (새로 생성)
+- `test/controllers/user_relationships_controller_test.rb`
+  (새로 생성)
 
 ### Phase 5: Delivery ✅
 
@@ -77,33 +80,33 @@
 
 ## Test Results
 
-| Test | Input | Expected | Actual | Status |
-| ---- | ----- | -------- | ------ | ------ |
-| profile_view 점수 기록 | targetUserId, type=profile_view | 201 Created, score +1 | 201, score=6 | ✅ |
-| reaction 점수 기록 | targetUserId, type=reaction | 201 Created, score +2 | 201, score=2 | ✅ |
-| post_view 점수 기록 | targetUserId, type=post_view | 201 Created, score +1 | 201, score=1 | ✅ |
-| invalid type 거부 | type=invalid | 422 Unprocessable | 422 | ✅ |
-| self targeting 거부 | targetUserId=self | 422 Unprocessable | 422 | ✅ |
-| target not found | nonexistent id | 404 Not Found | 404 | ✅ |
-| unauthorized | no token | 401 Unauthorized | 401 | ✅ |
-| 점수 조회 (기존) | GET /:id | 200 OK, score=5 | 200, 5 | ✅ |
-| 점수 조회 (없음) | GET /:id (no rel) | 200 OK, score=0 | 200, 0 | ✅ |
-| 점수 누적 | 3x profile_view | score=8 (5+3) | 8 | ✅ |
+| Test                    | Input                  | Expected            | Actual        | Status |
+| ----------------------- | ---------------------- | ------------------- | ------------- | ------ |
+| profile_view 점수 기록  | targetUserId, type=... | 201 Created, +1     | 201, score=6  | ✅     |
+| reaction 점수 기록      | targetUserId, type=... | 201 Created, +2     | 201, score=2  | ✅     |
+| post_view 점수 기록     | targetUserId, type=... | 201 Created, +1     | 201, score=1  | ✅     |
+| invalid type 거부       | type=invalid           | 422 Unprocessable   | 422           | ✅     |
+| self targeting 거부     | targetUserId=self      | 422 Unprocessable   | 422           | ✅     |
+| target not found        | nonexistent id         | 404 Not Found       | 404           | ✅     |
+| unauthorized            | no token               | 401 Unauthorized    | 401           | ✅     |
+| 점수 조회 (기존)        | GET /:id               | 200 OK, score=5     | 200, 5        | ✅     |
+| 점수 조회 (없음)        | GET /:id (no rel)      | 200 OK, score=0     | 200, 0        | ✅     |
+| 점수 누적               | 3x profile_view        | score=8 (5+3)       | 8             | ✅     |
 
 ## Error Log
 
-| Timestamp | Error | Attempt | Resolution |
-| --------- | ----- | ------- | ---------- |
-| 2026-02-02 | params[:target_user_id] not found | 1 | params[:targetUserId]로 수정 |
+| Timestamp  | Error                        | Attempt | Resolution              |
+| ---------- | ---------------------------- | ------- | ----------------------- |
+| 2026-02-02 | params[:target_user_id] 없음 | 1       | params[:targetUserId]로 |
 
 ## 5-Question Reboot Check
 
 작업 재개 시 이 질문들로 컨텍스트 복구:
 
-| Question | Answer |
-| -------- | ------ |
-| 1. 현재 어느 단계인가? | ✅ 완료 |
-| 2. 다음에 할 일은? | 없음 (기능 구현 완료) |
-| 3. 목표는? | 사용자 관계 점수 API 구현 ✅ |
-| 4. 지금까지 배운 것? | camelCase 파라미터 처리 주의 |
-| 5. 완료한 작업은? | 모델, 컨트롤러, 라우트, 12개 테스트 |
+| Question                | Answer                                |
+| ----------------------- | ------------------------------------- |
+| 1. 현재 어느 단계인가?  | ✅ 완료                               |
+| 2. 다음에 할 일은?      | 없음 (기능 구현 완료)                 |
+| 3. 목표는?              | 사용자 관계 점수 API 구현 ✅          |
+| 4. 지금까지 배운 것?    | camelCase 파라미터 처리 주의          |
+| 5. 완료한 작업은?       | 모델, 컨트롤러, 라우트, 12개 테스트   |

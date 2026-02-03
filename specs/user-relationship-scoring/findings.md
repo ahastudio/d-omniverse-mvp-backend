@@ -38,20 +38,20 @@
 
 ## Technical Decisions
 
-| Decision | Rationale |
-| -------- | --------- |
-| user_relationships 테이블 생성 | 별도 테이블로 관심사 분리 |
-| (user_id, target_user_id) 복합 unique 인덱스 | 중복 방지 및 조회 성능 |
-| score 컬럼 (integer, default: 0) | 단순 누적 점수 저장 |
-| INTERACTION_SCORES 상수 | type별 점수를 한 곳에서 관리 |
+| Decision                                      | Rationale                    |
+| --------------------------------------------- | ---------------------------- |
+| user_relationships 테이블 생성                | 별도 테이블로 관심사 분리    |
+| (user_id, target_user_id) 복합 unique 인덱스 | 중복 방지 및 조회 성능       |
+| score 컬럼 (integer, default: 0)              | 단순 누적 점수 저장          |
+| INTERACTION_SCORES 상수                       | type별 점수를 한 곳에서 관리 |
 
 ## Interaction Type & Scores
 
-| Type | Score | Description |
-| ---- | ----- | ----------- |
-| `profile_view` | +1 | 프로필 페이지 방문 |
-| `reaction` | +2 | 게시물에 반응 (좋아요 등) |
-| `post_view` | +1 | 게시물 조회 |
+| Type           | Score | Description               |
+| -------------- | ----- | ------------------------- |
+| `profile_view` | +1    | 프로필 페이지 방문        |
+| `reaction`     | +2    | 게시물에 반응 (좋아요 등) |
+| `post_view`    | +1    | 게시물 조회               |
 
 ## Issues Encountered
 
@@ -91,6 +91,7 @@ create_table :user_relationships, id: :string do |t|
   t.timestamps
 end
 
-add_index :user_relationships, [:user_id, :target_user_id], unique: true
+add_index :user_relationships, [:user_id, :target_user_id],
+          unique: true
 add_index :user_relationships, :target_user_id
 ```

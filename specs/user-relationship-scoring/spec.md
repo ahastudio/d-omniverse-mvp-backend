@@ -115,15 +115,18 @@ components:
 
 1. 프로필 방문 점수 기록
    - **Given** 로그인한 사용자 A와 대상 사용자 B가 존재
-   - **When** POST `/user-relationships` with `{ targetUserId, type: "profile_view" }`
+   - **When** POST `/user-relationships` with `{ targetUserId,
+     type: "profile_view" }`
    - **Then** 201 Created 응답, 관계 점수 +1
 2. 동일 사용자 재방문 시 점수 누적
    - **Given** 사용자 A가 이전에 B의 프로필을 방문한 적 있음
-   - **When** POST `/user-relationships` with `{ targetUserId, type: "profile_view" }`
+   - **When** POST `/user-relationships` with `{ targetUserId,
+     type: "profile_view" }`
    - **Then** 201 Created 응답, 기존 점수에 +1 누적
 3. 자기 자신 방문 시 무시
    - **Given** 로그인한 사용자 A
-   - **When** POST `/user-relationships` with `{ targetUserId: A, type: "profile_view" }`
+   - **When** POST `/user-relationships` with `{ targetUserId: A,
+     type: "profile_view" }`
    - **Then** 422 Unprocessable Entity 응답
 
 ### User Story 2 - Reaction Scoring (Priority: P1)
@@ -134,7 +137,8 @@ components:
 
 1. 반응 점수 기록 (좋아요)
    - **Given** 로그인한 사용자 A와 B의 게시물이 존재
-   - **When** POST `/user-relationships` with `{ targetUserId, type: "reaction" }`
+   - **When** POST `/user-relationships` with `{ targetUserId,
+     type: "reaction" }`
    - **Then** 201 Created 응답, 관계 점수 +2
 
 ### User Story 3 - Post View Scoring (Priority: P2)
@@ -145,7 +149,8 @@ components:
 
 1. 게시물 조회 점수 기록
    - **Given** 로그인한 사용자 A와 B의 게시물이 존재
-   - **When** POST `/user-relationships` with `{ targetUserId, type: "post_view" }`
+   - **When** POST `/user-relationships` with `{ targetUserId,
+     type: "post_view" }`
    - **Then** 201 Created 응답, 관계 점수 +1
 
 ### User Story 4 - Relationship Score Query (Priority: P1)
@@ -174,13 +179,15 @@ components:
 
 ```bash
 # 프로필 방문 점수 기록 (201 Created 예상)
-http POST https://local-d-omniverse-api.a99.dev/user-relationships \
+http POST \
+  https://local-d-omniverse-api.a99.dev/user-relationships \
   Authorization:"Bearer <token>" \
   targetUserId=<user_id> \
   type=profile_view
 
 # 관계 점수 조회 (200 OK 예상)
-http GET https://local-d-omniverse-api.a99.dev/user-relationships/<target_user_id> \
+http GET \
+  https://local-d-omniverse-api.a99.dev/user-relationships/<target_user_id> \
   Authorization:"Bearer <token>"
 ```
 
@@ -188,14 +195,16 @@ http GET https://local-d-omniverse-api.a99.dev/user-relationships/<target_user_i
 
 ### Functional Requirements
 
-- **FR-001**: 시스템은 POST `/user-relationships` 엔드포인트를 제공해야 함
+- **FR-001**: 시스템은 POST `/user-relationships` 엔드포인트를
+  제공해야 함
 - **FR-002**: 시스템은 GET `/user-relationships/:target_user_id`
   엔드포인트를 제공해야 함
 - **FR-003**: 시스템은 interaction type별로 다른 점수를 부여해야 함
   - `profile_view`: +1점
   - `reaction`: +2점
   - `post_view`: +1점
-- **FR-004**: 시스템은 동일 사용자 간 중복 interaction을 누적 처리해야 함
+- **FR-004**: 시스템은 동일 사용자 간 중복 interaction을 누적
+  처리해야 함
 - **FR-005**: 시스템은 자기 자신에 대한 interaction을 거부해야 함
 - **FR-006**: 시스템은 인증된 사용자만 접근을 허용해야 함
 
