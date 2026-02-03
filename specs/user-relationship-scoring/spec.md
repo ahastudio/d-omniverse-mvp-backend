@@ -10,6 +10,35 @@ info:
 
 paths:
   /user-relationships:
+    get:
+      summary: 관계 점수 목록 조회
+      description: 특정 사용자의 모든 관계를 점수 높은 순으로 조회
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 조회할 사용자 ID (생략 시 현재 로그인한 사용자)
+      responses:
+        '200':
+          description: 관계 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  relationships:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserRelationshipDetail'
+        '401':
+          description: 인증 실패
+        '404':
+          description: 사용자를 찾을 수 없음
+
     post:
       summary: 관계 점수 기록
       security:
@@ -97,6 +126,25 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    UserRelationshipDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 대상 사용자 ID
+        username:
+          type: string
+          description: 대상 사용자 아이디
+        nickname:
+          type: string
+          description: 대상 사용자 닉네임
+        profileImageUrl:
+          type: string
+          description: 대상 사용자 프로필 이미지 URL
+        score:
+          type: integer
+          description: 관계 점수
 ```
 
 ## User Scenarios & Testing *(mandatory)*
@@ -168,6 +216,36 @@ components:
    - **When** GET `/user-relationships/:target_user_id`
    - **Then** 200 OK 응답, `{ score: 0 }` 반환
 
+### User Story 5 - Relationship List Query (Priority: P1)
+
+사용자가 특정 사용자의 모든 관계를 점수 높은 순으로 조회할 수 있다.
+
+**Why this priority**: 프로필 페이지에서 관계가 가까운 사용자를
+우선 표시하여 사용자 간 연결성을 강화. 다른 사용자의 프로필을 방문해도
+해당 사용자와 관련된 사용자 목록을 볼 수 있어야 함.
+
+**Independent Test**: GET `/user-relationships?userId=<user_id>`
+엔드포인트에 요청을 보내 점수 순으로 정렬된 목록이 반환되는지 확인
+
+**Acceptance Scenarios**:
+
+1. 자신의 관계 목록 조회
+   - **Given** 로그인한 사용자 A가 여러 사용자와 관계를 가지고 있음
+   - **When** GET `/user-relationships`
+   - **Then** 200 OK 응답, 점수 높은 순으로 정렬된 관계 목록 반환
+2. 다른 사용자의 관계 목록 조회
+   - **Given** 로그인한 사용자 A와 사용자 B가 존재
+   - **When** GET `/user-relationships?userId=<B의 ID>`
+   - **Then** 200 OK 응답, B의 관계 목록이 점수 높은 순으로 반환
+3. 관계가 없는 경우
+   - **Given** 사용자 C가 아무와도 관계가 없음
+   - **When** GET `/user-relationships?userId=<C의 ID>`
+   - **Then** 200 OK 응답, 빈 배열 반환
+4. 존재하지 않는 사용자
+   - **Given** 존재하지 않는 사용자 ID
+   - **When** GET `/user-relationships?userId=<존재하지 않는 ID>`
+   - **Then** 404 Not Found 응답
+
 ### Edge Cases
 
 - 인증되지 않은 요청: 401 Unauthorized
@@ -178,6 +256,16 @@ components:
 ### Manual Testing with HTTPie
 
 ```bash
+# 자신의 관계 목록 조회 (200 OK 예상)
+http GET \
+  https://local-d-omniverse-api.a99.dev/user-relationships \
+  Authorization:"Bearer <token>"
+
+# 다른 사용자의 관계 목록 조회 (200 OK 예상)
+http GET \
+  "https://local-d-omniverse-api.a99.dev/user-relationships?userId=<user_id>" \
+  Authorization:"Bearer <token>"
+
 # 프로필 방문 점수 기록 (201 Created 예상)
 http POST \
   https://local-d-omniverse-api.a99.dev/user-relationships \
@@ -199,14 +287,22 @@ http GET \
   제공해야 함
 - **FR-002**: 시스템은 GET `/user-relationships/:target_user_id`
   엔드포인트를 제공해야 함
-- **FR-003**: 시스템은 interaction type별로 다른 점수를 부여해야 함
+- **FR-003**: 시스템은 GET `/user-relationships` 엔드포인트를
+  제공해야 함
+- **FR-004**: GET `/user-relationships`는 userId 쿼리 파라미터로
+  특정 사용자의 관계 목록을 조회할 수 있어야 함 (생략 시 현재
+  로그인한 사용자)
+- **FR-005**: 시스템은 interaction type별로 다른 점수를 부여해야 함
   - `profile_view`: +1점
   - `reaction`: +2점
   - `post_view`: +1점
-- **FR-004**: 시스템은 동일 사용자 간 중복 interaction을 누적
+- **FR-006**: 시스템은 동일 사용자 간 중복 interaction을 누적
   처리해야 함
-- **FR-005**: 시스템은 자기 자신에 대한 interaction을 거부해야 함
-- **FR-006**: 시스템은 인증된 사용자만 접근을 허용해야 함
+- **FR-007**: 시스템은 자기 자신에 대한 interaction을 거부해야 함
+- **FR-008**: 시스템은 인증된 사용자만 접근을 허용해야 함
+- **FR-009**: 관계 목록은 점수 높은 순으로 정렬되어야 함
+- **FR-010**: 관계 목록에는 대상 사용자의 id, username, nickname,
+  profileImageUrl, score가 포함되어야 함
 
 ### Non-Functional Requirements
 

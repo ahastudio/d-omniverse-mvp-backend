@@ -78,6 +78,33 @@
 1. 스펙 문서 업데이트
 2. 커밋 및 푸시
 
+## Session 2026-02-03
+
+### Phase 6: Feature Extension (진행 중)
+
+**작업 내역**:
+
+1. 관계 목록 조회 API 요구사항 추가 (spec.md 업데이트)
+   - GET `/user-relationships?userId=<user_id>` 엔드포인트
+   - userId 생략 시 현재 사용자, 지정 시 해당 사용자
+   - 점수 높은 순 정렬
+   - 대상 사용자 정보 포함 (id, username, nickname, avatarUrl,
+     score)
+2. 3-File Pattern 업데이트 (plan.md, findings.md, progress.md)
+
+**대기 중**:
+
+- [ ] UserRelationship 모델에 target_user 관계 추가
+- [ ] index 액션 구현
+- [ ] 테스트 작성 및 실행
+
+**생성/수정 파일**:
+
+- `specs/user-relationship-scoring/spec.md` (수정)
+- `specs/user-relationship-scoring/plan.md` (수정)
+- `specs/user-relationship-scoring/findings.md` (수정)
+- `specs/user-relationship-scoring/progress.md` (수정)
+
 ## Test Results
 
 | Test                    | Input                  | Expected            | Actual        | Status |
@@ -103,10 +130,10 @@
 
 작업 재개 시 이 질문들로 컨텍스트 복구:
 
-| Question                | Answer                                |
-| ----------------------- | ------------------------------------- |
-| 1. 현재 어느 단계인가?  | ✅ 완료                               |
-| 2. 다음에 할 일은?      | 없음 (기능 구현 완료)                 |
-| 3. 목표는?              | 사용자 관계 점수 API 구현 ✅          |
-| 4. 지금까지 배운 것?    | camelCase 파라미터 처리 주의          |
-| 5. 완료한 작업은?       | 모델, 컨트롤러, 라우트, 12개 테스트   |
+| Question                | Answer                                  |
+| ----------------------- | --------------------------------------- |
+| 1. 현재 어느 단계인가?  | Phase 6: Feature Extension (진행 중)    |
+| 2. 다음에 할 일은?      | index 액션 구현 및 테스트               |
+| 3. 목표는?              | 관계 목록 조회 API 추가                 |
+| 4. 지금까지 배운 것?    | See findings.md                         |
+| 5. 완료한 작업은?       | See above                               |

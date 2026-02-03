@@ -4,16 +4,19 @@
 
 사용자 간 interaction(프로필 방문, 반응, 게시물 보기)을 점수로 기록하여
 사용자 관계 강도를 측정하는 기능을 구현한다. 이 점수는 향후 추천 시스템
-등에 활용될 수 있다.
+등에 활용될 수 있다. 프로필 페이지에서 관계가 가까운 사용자 목록을
+표시한다.
 
 ## Goal
 
-POST `/user-relationships` 및 GET
-`/user-relationships/:target_user_id` API 구현 완료
+- POST `/user-relationships` 및 GET
+  `/user-relationships/:target_user_id` API 구현 완료 ✅
+- GET `/user-relationships?userId=<user_id>` API 추가 구현
+  (관계 목록 조회)
 
 ## Current Phase
 
-✅ 완료
+Phase 6: Feature Extension (진행 중)
 
 ## Phases
 
@@ -48,6 +51,14 @@ POST `/user-relationships` 및 GET
 
 - [x] 문서 업데이트
 - [x] 커밋 및 푸시
+
+### Phase 6: Feature Extension (진행 중)
+
+- [ ] 관계 목록 조회 API 요구사항 분석
+- [ ] index 액션 설계 (userId 파라미터 처리)
+- [ ] UserRelationship 모델에 target_user 관계 추가
+- [ ] index 액션 구현
+- [ ] 테스트 작성 및 실행
 
 ## Technical Context
 

@@ -5,11 +5,15 @@
 
 ## Requirements
 
-- [ ] POST `/user-relationships` 엔드포인트 제공
-- [ ] GET `/user-relationships/:target_user_id` 엔드포인트 제공
-- [ ] interaction type별 점수 차등 부여
-- [ ] 자기 자신에 대한 interaction 거부
-- [ ] 인증 필수
+- [x] POST `/user-relationships` 엔드포인트 제공
+- [x] GET `/user-relationships/:target_user_id` 엔드포인트 제공
+- [ ] GET `/user-relationships?userId=<user_id>` 엔드포인트 제공
+- [x] interaction type별 점수 차등 부여
+- [x] 자기 자신에 대한 interaction 거부
+- [x] 인증 필수
+- [ ] 특정 사용자의 관계 목록 조회 (점수 높은 순)
+- [ ] 대상 사용자 정보 포함 (id, username, nickname, avatarUrl,
+  score)
 
 ## Research Findings
 
@@ -56,6 +60,57 @@
 ## Issues Encountered
 
 (없음)
+
+## New Feature Analysis (2026-02-03)
+
+### 관계 목록 조회 API 설계
+
+**요구사항**:
+
+- 프로필 페이지에서 관계가 가까운 사용자 목록 표시
+- 자신의 프로필뿐 아니라 다른 사용자 프로필에서도 조회 가능
+- 점수 높은 순으로 정렬
+- 대상 사용자 정보 포함: id, username, nickname, avatarUrl, score
+
+**기술적 결정**:
+
+| Decision                     | Rationale                              |
+| ---------------------------- | -------------------------------------- |
+| index 액션 추가              | RESTful 패턴 따름                      |
+| userId 쿼리 파라미터 (선택)  | 생략 시 현재, 지정 시 해당 사용자      |
+| includes(:target_user) 사용  | N+1 쿼리 방지                          |
+| order(score: :desc)          | 점수 높은 순 정렬                      |
+| User의 avatar_url 매핑       | 기존 컬럼명 사용                       |
+
+**필요한 작업**:
+
+1. ~~UserRelationship 모델에 `belongs_to :target_user` 관계 추가~~
+   (이미 존재 확인됨)
+2. routes.rb에 index 액션 추가 (only 배열 수정)
+3. index 액션 구현 (userId 파라미터 처리)
+4. 존재하지 않는 사용자 처리 (404)
+5. 테스트 케이스 추가
+
+**구현 시 주의사항**:
+
+1. **파라미터 처리**:
+   - camelCase로 받기: `params[:userId]`
+   - 생략 시: `current_user.id` 사용
+   - 제공 시: 해당 사용자 ID 사용
+2. **사용자 존재 확인**:
+   - `User.find(user_id)` 사용 → 없으면 404
+   - `find_by`가 아닌 `find` 사용하여 자동 예외 발생
+3. **쿼리 최적화**:
+   - `includes(:target_user)` 필수 (N+1 방지)
+   - `where(user_id: user_id)` 조건
+   - `order(score: :desc)` 정렬
+4. **응답 형식**:
+   - avatarUrl (camelCase)로 매핑
+   - avatar_url이 nil일 수 있음 (그대로 전달)
+5. **라우팅**:
+   - `only: [:index, :create, :show]`로 수정
+   - index는 collection 라우트 (자동으로
+     GET /user-relationships)
 
 ## Resources
 
