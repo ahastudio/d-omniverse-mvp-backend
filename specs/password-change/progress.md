@@ -45,7 +45,7 @@
 - `app/controllers/passwords_controller.rb` (새로 생성)
 - `test/controllers/passwords_controller_test.rb` (새로 생성)
 
-### Phase 4: Testing & Verification ✅
+### Phase 4: Testing ✅
 
 **작업 내역**:
 
@@ -58,39 +58,32 @@
    - 새 패스워드가 빈 문자열이면 422 응답
    - 새 패스워드가 기존과 동일해도 성공
 
-### Phase 5: Delivery ✅
-
-**작업 내역**:
-
-1. 문서 업데이트 완료
-2. 커밋 완료
-
 ## Test Results
 
-| Test                         | Input           | Expected | Actual | Status |
-| ---------------------------- | --------------- | -------- | ------ | ------ |
-| 올바른 기존 패스워드로 변경  | valid old pass  | 200 OK   | 200 OK | ✅     |
-| 잘못된 기존 패스워드로 변경  | wrong old pass  | 422      | 422    | ✅     |
-| 인증 없이 요청               | no auth header  | 401      | 401    | ✅     |
-| 다른 사용자 패스워드 변경    | other user      | 403      | 403    | ✅     |
-| 존재하지 않는 사용자         | invalid user    | 404      | 404    | ✅     |
-| 빈 새 패스워드               | empty string    | 422      | 422    | ✅     |
-| 동일한 패스워드로 변경       | same password   | 200 OK   | 200 OK | ✅     |
+| Test                         | Input          | Expected | Actual | Status |
+| ---------------------------- | -------------- | -------- | ------ | ------ |
+| 올바른 기존 패스워드로 변경  | valid old pass | 200 OK   | 200 OK | ✅     |
+| 잘못된 기존 패스워드로 변경  | wrong old pass | 422      | 422    | ✅     |
+| 인증 없이 요청               | no auth        | 401      | 401    | ✅     |
+| 다른 사용자 패스워드 변경    | other user     | 403      | 403    | ✅     |
+| 존재하지 않는 사용자         | invalid user   | 404      | 404    | ✅     |
+| 빈 새 패스워드               | empty string   | 422      | 422    | ✅     |
+| 동일한 패스워드로 변경       | same password  | 200 OK   | 200 OK | ✅     |
 
 ## Error Log
 
 | Timestamp | Error | Attempt | Resolution |
 | --------- | ----- | ------- | ---------- |
-| -         | -     | 1       | -          |
+| -         | -     | -       | -          |
 
 ## 5-Question Reboot Check
 
 작업 재개 시 이 질문들로 컨텍스트 복구:
 
-| Question | Answer |
-| -------- | ------ |
-| 1. 현재 어느 단계인가? | ✅ 완료 |
-| 2. 다음에 할 일은? | 없음 (기능 구현 완료) |
-| 3. 목표는? | PATCH `/users/{username}/password` API 구현 ✅ |
-| 4. 지금까지 배운 것? | Authenticatable의 authenticate 메서드 활용 |
-| 5. 완료한 작업은? | 컨트롤러, 라우트, 7개 테스트 |
+| Question               | Answer                     |
+| ---------------------- | -------------------------- |
+| 1. 현재 어느 단계인가? | ✅ 완료                    |
+| 2. 다음에 할 일은?     | 없음 (기능 구현 완료)      |
+| 3. 목표는?             | PATCH 패스워드 변경 API ✅ |
+| 4. 지금까지 배운 것?   | findings.md 참고           |
+| 5. 완료한 작업은?      | 위 내용 참고               |

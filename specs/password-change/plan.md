@@ -1,117 +1,141 @@
-# Project: 패스워드 변경
+# Implementation Plan: 패스워드 변경
 
 ## Summary
 
-로그인한 사용자가 기존 패스워드를 확인한 후 새 패스워드로 변경할 수 있는
-API 엔드포인트를 구현한다. 기존 Authenticatable concern의 패스워드 검증
-및 해싱 기능을 활용한다.
+기존 Authenticatable concern의 `authenticate` 메서드로 기존 패스워드를
+검증하고, `password=` setter로 새 패스워드를 해싱하여 저장한다.
+PasswordsController를 새로 생성하여 단일 책임 원칙을 따른다.
 
-## Goal
+## Requirements
 
-PATCH `/users/{username}/password` 엔드포인트 구현 및 테스트 완료
+1. PATCH `/users/{username}/password` 엔드포인트 제공
+2. 기존 패스워드 검증 후 새 패스워드로 변경
+3. 본인만 변경 가능 (권한 검사)
+4. 인증 필수
 
-## Current Phase
+## Critical Files
 
-✅ 완료
+### New Files
 
-## Phases
+- `app/controllers/passwords_controller.rb`
+- `test/controllers/passwords_controller_test.rb`
 
-### Phase 1: Requirements & Discovery ✅
+### Modified Files
 
-- [x] 요구사항 확인 (spec.md 작성)
-- [x] 기존 코드베이스 탐색
-- [x] Authenticatable concern 분석
-- [x] 기존 인증 패턴 파악
+- `config/routes.rb`
 
-### Phase 2: Planning & Structure ✅
+### Reference Files
 
-- [x] 라우팅 설계
-- [x] 컨트롤러 액션 설계
-- [x] 응답 형식 정의
+- `app/models/concerns/authenticatable.rb`
+- `app/controllers/application_controller.rb`
+- `app/models/user.rb`
 
-### Phase 3: Implementation ✅
+## Architecture
 
-- [x] 라우트 추가 (`/users/:username/password`)
-- [x] 컨트롤러 액션 구현
-- [x] 권한 검사 구현
-
-### Phase 4: Testing & Verification ✅
-
-- [x] 단위 테스트 작성
-- [x] 통합 테스트 작성
-- [x] 엣지 케이스 테스트
-
-### Phase 5: Delivery ✅
-
-- [x] 문서 업데이트
-- [x] 커밋 완료
-
-## Technical Context
-
-### Stack
-
-- Ruby on Rails (API-only mode)
-- Argon2 (패스워드 해싱)
-- JWT (인증)
-- Minitest (테스트 프레임워크)
-
-### Architecture
-
-- RESTful API
-- MVC 패턴 (Rails 기본)
-- 기존 users 테이블 활용
-
-### Key Decisions
-
-| Decision                    | Rationale                                |
-| --------------------------- | ---------------------------------------- |
-| PATCH 메서드 사용           | 리소스 부분 업데이트 의미론적으로 적합   |
-| 별도 passwords 컨트롤러     | 단일 책임 원칙, 패스워드 전용 로직 분리  |
-| 기존 패스워드 필수 검증     | 보안 강화, 탈취된 토큰 악용 방지         |
-| 422 Unprocessable Entity    | 검증 실패 표현에 적합                    |
-
-## Project Structure
-
-### Source Code
+### User Flow
 
 ```text
-app/
-├── controllers/
-│   └── passwords_controller.rb  (새로 생성)
-├── models/
-│   └── user.rb  (기존 활용)
-│   └── concerns/
-│       └── authenticatable.rb  (기존 활용)
-config/
-└── routes.rb  (수정)
-test/
-└── controllers/
-    └── passwords_controller_test.rb  (새로 생성)
+사용자 → [PATCH /users/:username/password] → PasswordsController
+                                                     ↓
+                                             before_action 검사
+                                             (인증, 권한)
+                                                     ↓
+                                             기존 패스워드 검증
+                                             (authenticate)
+                                                     ↓
+                                             새 패스워드 저장
+                                             (password=, save!)
+                                                     ↓
+                                             200 OK 응답
 ```
 
-## Key Questions
+### Domain Model
 
-1. 기존 패스워드 검증 로직이 Authenticatable에 있는가? ✅
-2. 현재 User에 password= setter가 있는가? ✅
-3. 다른 사용자 패스워드 변경 방지 로직은? → before_action으로 구현
+```text
+User (기존)
+├── authenticate(password)  ← 기존 패스워드 검증
+├── password=               ← 새 패스워드 해싱
+└── save!                   ← 저장
+```
 
-## Decisions Made
+## Implementation Steps
 
-| Decision                       | Rationale                            |
-| ------------------------------ | ------------------------------------ |
-| PasswordsController 생성       | 단일 책임 원칙, 명확한 역할 분리     |
-| PATCH 메서드 사용              | RESTful 규칙, 부분 업데이트          |
-| camelCase 파라미터 받기        | 기존 API 컨벤션 따름                 |
-| before_action으로 권한 검사    | 기존 패턴 따름, 로직 분리            |
+### Step 1: Route 추가
 
-## Errors Encountered
+**File:** `config/routes.rb`
 
-| Error | Attempt | Resolution |
-| ----- | ------- | ---------- |
-| -     | -       | -          |
+```ruby
+resources :users, only: [ :create, :show, :update ], param: :username do
+  resource :password, only: [ :update ]
+end
+```
 
-## Notes
+### Step 2: Controller 구현
 
-- Authenticatable concern의 authenticate 메서드 활용
-- 패스워드 복잡도 검증은 별도 이슈로 분리
-- 패스워드 변경 후 토큰 재발급은 현재 범위 외
+**File:** `app/controllers/passwords_controller.rb`
+
+```ruby
+class PasswordsController < ApplicationController
+  before_action :login_required
+  before_action :set_user
+  before_action :verify_owner
+
+  def update
+    # 기존 패스워드 검증
+    # 새 패스워드 설정 및 저장
+  end
+end
+```
+
+### Step 3: Test 작성
+
+**File:** `test/controllers/passwords_controller_test.rb`
+
+테스트 케이스:
+- 올바른 기존 패스워드로 변경 성공 (200)
+- 잘못된 기존 패스워드로 변경 실패 (422)
+- 인증 없이 요청 시 (401)
+- 다른 사용자 패스워드 변경 시 (403)
+- 존재하지 않는 사용자 (404)
+
+## Verification
+
+### Build
+
+```bash
+bin/rails runner "puts 'OK'"
+```
+
+### Test
+
+```bash
+bin/rails test test/controllers/passwords_controller_test.rb
+```
+
+### Manual Test
+
+```bash
+# 패스워드 변경 성공 (200 OK 예상)
+http PATCH localhost:3000/users/dancer/password \
+  Authorization:"Bearer <token>" \
+  oldPassword=password123 \
+  newPassword=newpass456
+
+# 잘못된 기존 패스워드 (422 예상)
+http PATCH localhost:3000/users/dancer/password \
+  Authorization:"Bearer <token>" \
+  oldPassword=wrongpass \
+  newPassword=newpass456
+```
+
+## Considerations
+
+### 기존 코드 재사용
+
+- Authenticatable concern의 `authenticate` 메서드 활용
+- ApplicationController의 `login_required`, `current_user` 활용
+
+### 호환성
+
+- 기존 User 모델 변경 없음
+- 기존 인증 시스템과 호환
