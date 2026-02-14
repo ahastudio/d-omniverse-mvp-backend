@@ -92,6 +92,8 @@ Think before you act.**
 
 ### 테스트
 
+- **Outside-In TDD**: 테스트 먼저 작성 (Red → Green → Refactor)
+- 구현 순서: Controller → Service → Domain (바깥에서 안으로)
 - 기능 추가/버그 수정 시 테스트 코드 작성 및 실행
 - 테스트 불가능하면 이유 설명 + 사용자 동의
 
