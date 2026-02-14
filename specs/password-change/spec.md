@@ -132,10 +132,24 @@ paths:
           description: 인증 실패
         '403':
           description: 권한 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: 사용자 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
-          description: 검증 실패
+          description: 검증 실패 (기존 패스워드 오류 또는 validation 오류)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Error'
+                  - $ref: '#/components/schemas/ValidationErrors'
 
 components:
   securitySchemes:
@@ -143,4 +157,21 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: "Invalid current password"
+    ValidationErrors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+      example:
+        errors: ["Password digest can't be blank"]
 ```
