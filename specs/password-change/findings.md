@@ -60,6 +60,12 @@
 
 ## Learnings
 
+### Outside-In TDD
+
+- **순서**: 테스트 먼저 (Red) → 최소 구현 (Green) → 리팩토링 (Refactor)
+- **레이어**: Controller → Service → Domain (바깥에서 안으로)
+- **이점**: 사용자 관점에서 시작, 불필요한 코드 방지
+
 ### Authenticatable Concern 분석
 
 - `password=` setter: 패스워드 설정 및 Argon2 해싱

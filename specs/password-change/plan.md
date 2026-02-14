@@ -32,6 +32,8 @@ PasswordsController를 새로 생성하여 단일 책임 원칙을 따른다.
 
 ## Architecture
 
+Outside-In 순서로 다이어그램을 표현합니다.
+
 ### User Flow
 
 ```text
@@ -41,10 +43,10 @@ PasswordsController를 새로 생성하여 단일 책임 원칙을 따른다.
                                              (인증, 권한)
                                                      ↓
                                              기존 패스워드 검증
-                                             (authenticate)
+                                             (User#authenticate)
                                                      ↓
                                              새 패스워드 저장
-                                             (password=, save!)
+                                             (User#password=, save!)
                                                      ↓
                                              200 OK 응답
 ```
@@ -58,7 +60,7 @@ User (기존)
 └── save!                   ← 저장
 ```
 
-## Implementation Steps
+## Implementation Steps (Outside-In TDD)
 
 ### Step 1: Route 추가
 
@@ -70,7 +72,31 @@ resources :users, only: [ :create, :show, :update ], param: :username do
 end
 ```
 
-### Step 2: Controller 구현
+### Step 2: Controller 테스트 작성 (Red)
+
+**File:** `test/controllers/passwords_controller_test.rb`
+
+```ruby
+class PasswordsControllerTest < ActionDispatch::IntegrationTest
+  test "올바른 기존 패스워드로 변경 성공" do
+    patch user_password_url(user_username: @user.username),
+          params: { oldPassword: "password123", newPassword: "newpass456" },
+          headers: @auth_header,
+          as: :json
+
+    assert_response :ok
+  end
+end
+```
+
+테스트 케이스:
+- 올바른 기존 패스워드로 변경 성공 (200)
+- 잘못된 기존 패스워드로 변경 실패 (422)
+- 인증 없이 요청 시 (401)
+- 다른 사용자 패스워드 변경 시 (403)
+- 존재하지 않는 사용자 (404)
+
+### Step 3: Controller 구현 (Green)
 
 **File:** `app/controllers/passwords_controller.rb`
 
@@ -81,22 +107,16 @@ class PasswordsController < ApplicationController
   before_action :verify_owner
 
   def update
-    # 기존 패스워드 검증
-    # 새 패스워드 설정 및 저장
+    # 최소한의 코드로 테스트 통과
   end
 end
 ```
 
-### Step 3: Test 작성
+### Step 4: Refactor
 
-**File:** `test/controllers/passwords_controller_test.rb`
-
-테스트 케이스:
-- 올바른 기존 패스워드로 변경 성공 (200)
-- 잘못된 기존 패스워드로 변경 실패 (422)
-- 인증 없이 요청 시 (401)
-- 다른 사용자 패스워드 변경 시 (403)
-- 존재하지 않는 사용자 (404)
+- 중복 제거
+- 코드 정리
+- 80컬럼 맞추기
 
 ## Verification
 
