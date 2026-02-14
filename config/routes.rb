@@ -13,7 +13,9 @@ Rails.application.routes.draw do
   resources :username_seats, only: [ :show ], param: :username,
              path: "username-seats"
 
-  resources :users, only: [ :create, :show, :update ], param: :username
+  resources :users, only: [ :create, :show, :update ], param: :username do
+    resource :password, only: [ :update ]
+  end
 
   resources :posts, only: [ :index, :create, :show, :destroy ] do
     member do
