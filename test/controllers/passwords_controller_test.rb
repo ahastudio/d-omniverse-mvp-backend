@@ -116,7 +116,8 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
 
     json = JSON.parse(response.body)
-    assert_includes json["error"].downcase, "too long"
+    assert json["errors"].is_a?(Array)
+    assert json["errors"].any? { |msg| msg.downcase.include?("too long") }
   end
 
   test "새 패스워드가 정확히 128자면 성공" do

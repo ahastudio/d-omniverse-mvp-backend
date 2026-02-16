@@ -11,9 +11,7 @@ class PasswordsController < ApplicationController
 
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    error_message = e.record.errors.full_messages.first ||
-                    "Validation failed"
-    render json: { error: error_message },
+    render json: { errors: e.record.errors.full_messages },
            status: :unprocessable_entity
   end
 
