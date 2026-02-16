@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  protected
+protected
 
   def login_required
     return if logged_in?

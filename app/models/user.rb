@@ -22,6 +22,8 @@ class User < ApplicationRecord
 
   validates :nickname, presence: true
 
+  validates :password, length: { maximum: 128 }, allow_nil: true
+
   def generate_token
     payload = { sub: id, username: username }
     JWT.encode(payload, Rails.application.secret_key_base)
