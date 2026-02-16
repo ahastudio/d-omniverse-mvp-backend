@@ -34,14 +34,13 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.authenticate("password123")
   end
 
-  test "password not changed when set to empty string" do
+  test "password cannot be set to empty string" do
     user = users(:admin)
-    original_digest = user.password_digest
 
     user.password = ""
-    user.save!
 
-    assert_equal original_digest, user.password_digest
-    assert user.authenticate("password123")
+    assert_raises(ActiveRecord::RecordInvalid) do
+      user.save!
+    end
   end
 end
