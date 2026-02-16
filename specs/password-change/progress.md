@@ -2,7 +2,7 @@
 
 > **각 단계를 완료하거나 문제가 발생하면 업데이트하세요.**
 
-## Session
+## Session 2026-02-02
 
 ### Phase 1: Requirements & Discovery ✅
 
@@ -31,6 +31,10 @@
 1. 라우팅 설계 완료: PATCH `/users/:username/password`
 2. 컨트롤러 구조 설계 완료: PasswordsController#update
 
+**생성/수정 파일**:
+
+- `specs/password-change/plan.md` (수정)
+
 ### Phase 3: Implementation ✅
 
 **작업 내역**:
@@ -58,6 +62,57 @@
    - 새 패스워드가 빈 문자열이면 422 응답
    - 새 패스워드가 기존과 동일해도 성공
 
+## Session 2026-02-16
+
+### 문서 정리 및 템플릿 동기화 ✅
+
+**작업 내역**:
+
+1. 템플릿 구조 확인 및 6개 파일 구조 정리
+2. README.md 추가 (기능 개요 및 관련 문서 링크)
+3. plan.md 테스트 케이스 목록 동기화 (7개로 업데이트)
+4. tasks.md Technical Decisions 동기화 (5개로 업데이트)
+5. 마크다운 린트 수정 (MD032 에러 해결)
+
+**생성/수정 파일**:
+
+- `specs/password-change/README.md` (새로 생성)
+- `specs/password-change/plan.md` (수정)
+- `specs/password-change/tasks.md` (수정)
+- `specs/password-change/progress.md` (수정)
+
+### 빈 패스워드 검증 버그 수정 ✅
+
+**작업 내역**:
+
+1. 테스트 실행 중 빈 패스워드 검증 실패 발견
+2. Authenticatable concern의 password= setter 버그 수정
+3. spec.md에 누락된 시나리오 2개 추가 (빈 패스워드, 동일 패스워드)
+4. 테스트 재실행 및 통과 확인
+
+**생성/수정 파일**:
+
+- `app/models/concerns/authenticatable.rb` (수정)
+- `specs/password-change/spec.md` (수정)
+- `specs/password-change/progress.md` (수정)
+- `specs/password-change/findings.md` (수정)
+
+### 검토 이슈 수정 및 테스트 보강 ✅
+
+**작업 내역**:
+
+1. `authenticate`에 빈 값 방어 로직 추가
+2. 패스워드 변경 사용자명 대소문자 정규화
+3. 누락 입력 및 대소문자 username 테스트 추가
+
+**생성/수정 파일**:
+
+- `app/controllers/passwords_controller.rb` (수정)
+- `app/models/concerns/authenticatable.rb` (수정)
+- `test/controllers/passwords_controller_test.rb` (수정)
+- `specs/password-change/progress.md` (수정)
+- `specs/password-change/findings.md` (수정)
+
 ## Test Results
 
 | Test                         | Input          | Expected | Actual | Status |
@@ -72,9 +127,9 @@
 
 ## Error Log
 
-| Timestamp | Error | Attempt | Resolution |
-| --------- | ----- | ------- | ---------- |
-| -         | -     | -       | -          |
+| Timestamp  | Error            | Attempt | Resolution                  |
+| ---------- | ---------------- | ------- | --------------------------- |
+| 2026-02-16 | MD032 린트 에러  | 1       | 리스트 앞 빈 줄 추가        |
 
 ## 5-Question Reboot Check
 

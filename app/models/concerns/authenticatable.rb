@@ -12,12 +12,17 @@ module Authenticatable
   def password=(unencrypted_password)
     @password = unencrypted_password
 
-    return if unencrypted_password.blank?
+    if unencrypted_password.blank?
+      self.password_digest = nil
+      return
+    end
 
     self.password_digest = hash_password(unencrypted_password)
   end
 
   def authenticate(unencrypted_password)
+    return false if unencrypted_password.blank?
+
     password_digest && verify_password(unencrypted_password)
   end
 

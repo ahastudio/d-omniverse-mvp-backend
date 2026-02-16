@@ -1,16 +1,5 @@
 # Feature Specification: 패스워드 변경
 
-<!--
-제품 요구사항을 정의하는 문서입니다.
-PRD(Product Requirements Document) 수준으로 작성하며, 기술적인 세부사항은
-포함하지 않습니다.
-
-포함하지 않는 내용 (plan.md, findings.md에서 다룸):
-- 도메인 모델 (Aggregate, Entity, Value Object, Exception 등)
-- 동작 방식의 코드 예시
-- 기술적 구현 세부사항
--->
-
 ## Overview
 
 로그인한 사용자가 기존 패스워드를 확인한 후 새 패스워드로 변경할 수 있다.
@@ -57,6 +46,20 @@ Scenario 5: **존재하지 않는 사용자**
 - Given: 사용자가 로그인 상태
 - When: PATCH `/users/{nonexistent}/password` 요청
 - Then: 404 Not Found 응답
+
+Scenario 6: **새 패스워드가 빈 문자열**
+
+- Given: 사용자가 로그인 상태이고 기존 패스워드가 "oldpass123"
+- When: PATCH `/users/{username}/password` 요청
+  (`oldPassword`: "oldpass123", `newPassword`: "")
+- Then: 422 Unprocessable Entity 응답
+
+Scenario 7: **새 패스워드가 기존과 동일**
+
+- Given: 사용자가 로그인 상태이고 기존 패스워드가 "oldpass123"
+- When: PATCH `/users/{username}/password` 요청
+  (`oldPassword`: "oldpass123", `newPassword`: "oldpass123")
+- Then: 200 OK 응답
 
 ## Functional Requirements (mandatory)
 

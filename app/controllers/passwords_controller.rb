@@ -25,7 +25,8 @@ class PasswordsController < ApplicationController
 private
 
   def set_user
-    @user = User.find_by(username: params[:user_username])
+    username = params[:user_username].to_s.downcase
+    @user = User.find_by(username: username)
 
     return if @user
 
@@ -33,6 +34,7 @@ private
   end
 
   def verify_owner
+    return unless @user
     return if @user == current_user
 
     render json: { error: "Forbidden" }, status: :forbidden

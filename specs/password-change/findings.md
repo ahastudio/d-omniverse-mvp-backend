@@ -46,33 +46,87 @@
 
 ## Technical Decisions
 
-| Decision                    | Rationale                          |
-| --------------------------- | ---------------------------------- |
-| PasswordsController 생성    | 단일 책임 원칙, 패스워드 전용 분리 |
-| PATCH 메서드 사용           | RESTful 규칙, 부분 업데이트        |
+| Decision                    | Rationale                           |
+| --------------------------- | ----------------------------------- |
+| PasswordsController 생성    | 단일 책임 원칙, 패스워드 전용 분리  |
+| PATCH 메서드 사용           | RESTful 규칙, 부분 업데이트         |
 | `authenticate` 메서드 활용  | 기존 Authenticatable concern 재사용 |
-| before_action으로 권한 검사 | 기존 패턴 따름, 로직 분리          |
-| 422 상태 코드               | 검증 실패 표현에 적합              |
+| before_action으로 권한 검사 | 기존 패턴 따름, 로직 분리           |
+| 422 상태 코드               | 검증 실패 표현에 적합               |
 
 ## Issues Encountered
 
-(발생한 이슈 없음)
+### 1. 빈 패스워드 검증 실패 (2026-02-16)
+
+**문제**:
+
+빈 문자열을 새 패스워드로 설정 시 422 응답이 나와야 하는데 200 응답이 발생
+
+**원인**:
+
+Authenticatable concern의 `password=` setter에서 빈 문자열을 받으면
+`password_digest`를 설정하지 않고 early return하여 기존 값이 유지됨.
+이로 인해 `validates :password_digest, presence: true`가 작동하지 않음
+
+**해결**:
+
+```ruby
+# Before
+def password=(unencrypted_password)
+  @password = unencrypted_password
+  return if unencrypted_password.blank?
+  self.password_digest = hash_password(unencrypted_password)
+end
+
+# After
+def password=(unencrypted_password)
+  @password = unencrypted_password
+  if unencrypted_password.blank?
+    self.password_digest = nil
+    return
+  end
+  self.password_digest = hash_password(unencrypted_password)
+end
+```
+
+**결과**:
+
+테스트 통과 (빈 패스워드 → 422 응답)
 
 ## Learnings
 
-### Outside-In TDD
-
-- **순서**: 테스트 먼저 (Red) → 최소 구현 (Green) → 리팩토링 (Refactor)
-- **레이어**: Controller → Service → Domain (바깥에서 안으로)
-- **이점**: 사용자 관점에서 시작, 불필요한 코드 방지
-
-### Authenticatable Concern 분석
+### Authenticatable Concern 분석 (2026-02-02)
 
 - `password=` setter: 패스워드 설정 및 Argon2 해싱
 - `authenticate(password)`: 패스워드 검증 (boolean 반환)
 - `authenticate!(password)`: 패스워드 검증 (실패 시 예외)
 
-### 인증 시스템
+### 인증 시스템 (2026-02-02)
 
 - JWT 기반 인증으로 `current_user` 접근 가능
 - `login_required` before_action으로 인증 필터링
+
+### Outside-In TDD (2026-02-14)
+
+- **순서**: 테스트 먼저 (Red) → 최소 구현 (Green) → 리팩토링 (Refactor)
+- **레이어**: Controller → Service → Domain (바깥에서 안으로)
+- **이점**: 사용자 관점에서 시작, 불필요한 코드 방지
+
+### File-Based Planning Workflow (2026-02-16)
+
+- **6-File 템플릿 구조**: README.md, spec.md, tasks.md, plan.md,
+  findings.md, progress.md
+- **progress.md 구조**: Session → Phase → 작업 내역 → 생성/수정 파일 →
+  (모든 세션 다음) Test Results → Error Log → 5-Question Reboot Check
+- **각 Phase 필수 섹션**: 작업 내역 + 생성/수정 파일 (일관성 유지)
+- **문서 동기화 중요성**: spec.md ↔ plan.md ↔ tasks.md ↔ findings.md ↔
+  progress.md 모든 정보가 일치해야 함
+- **마크다운 린트**: MD032 (리스트 앞 빈 줄), 템플릿 구조 준수 필수
+- **즉시 문서 업데이트**: 코드 작성 후 progress.md → findings.md →
+  AGENTS.md 순서로 즉시 기록
+
+### 입력 방어와 정규화 (2026-02-16)
+
+- `authenticate`는 nil/빈 문자열 입력을 명시적으로 거부해 예외를
+  방지한다
+- 사용자명은 컨트롤러 간 동일한 규칙으로 정규화해야 한다

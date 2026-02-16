@@ -31,6 +31,18 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Invalid current password", json["error"]
   end
 
+  test "기존 패스워드 누락 시 422 응답" do
+    patch user_password_url(user_username: @user.username),
+          params: { newPassword: "newpass456" },
+          headers: @auth_header,
+          as: :json
+
+    assert_response :unprocessable_entity
+
+    json = JSON.parse(response.body)
+    assert_equal "Invalid current password", json["error"]
+  end
+
   test "인증 없이 요청 시 401 응답" do
     patch user_password_url(user_username: @user.username),
           params: { oldPassword: "password123", newPassword: "newpass456" },
@@ -57,6 +69,18 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
           as: :json
 
     assert_response :not_found
+  end
+
+  test "대소문자 섞인 username으로 변경 성공" do
+    patch user_password_url(user_username: @user.username.upcase),
+          params: { oldPassword: "password123", newPassword: "newpass456" },
+          headers: @auth_header,
+          as: :json
+
+    assert_response :ok
+
+    @user.reload
+    assert @user.authenticate("newpass456")
   end
 
   test "새 패스워드가 빈 문자열이면 422 응답" do

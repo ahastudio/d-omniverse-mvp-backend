@@ -33,7 +33,7 @@ PATCH `/users/{username}/password` 엔드포인트 구현 및 테스트 완료
 
 - [x] 전체 빌드 확인
 - [x] 전체 테스트 통과 확인
-- [ ] 수동 테스트 (가능한 경우)
+- [x] 통합 테스트로 검증 완료 (HTTPie/curl 수동 테스트 선택사항)
 
 ## Key Questions
 
@@ -43,11 +43,13 @@ PATCH `/users/{username}/password` 엔드포인트 구현 및 테스트 완료
 
 ## Decisions Made
 
-| Decision                    | Rationale                          |
-| --------------------------- | ---------------------------------- |
-| PasswordsController 생성    | 단일 책임 원칙, 명확한 역할 분리   |
-| PATCH 메서드 사용           | RESTful 규칙, 부분 업데이트        |
-| before_action으로 권한 검사 | 기존 패턴 따름, 로직 분리          |
+| Decision                    | Rationale                           |
+| --------------------------- | ----------------------------------- |
+| PasswordsController 생성    | 단일 책임 원칙, 명확한 역할 분리    |
+| PATCH 메서드 사용           | RESTful 규칙, 부분 업데이트         |
+| `authenticate` 메서드 활용  | 기존 Authenticatable concern 재사용 |
+| before_action으로 권한 검사 | 기존 패턴 따름, 로직 분리           |
+| 422 상태 코드               | 검증 실패 표현에 적합               |
 
 ## Errors Encountered
 
