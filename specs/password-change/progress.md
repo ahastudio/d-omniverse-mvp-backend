@@ -113,6 +113,64 @@
 - `specs/password-change/progress.md` (수정)
 - `specs/password-change/findings.md` (수정)
 
+### 스펙 문서 완전성 개선 ✅
+
+**작업 내역**:
+
+1. Scenario 8 추가 (기존 패스워드 누락)
+2. FR-7 추가 (빈 패스워드 검증 요구사항)
+3. SC-5, SC-6, SC-7 추가 (모든 시나리오 커버)
+4. OpenAPI 401 응답 스키마 추가 (일관성 개선)
+5. plan.md 테스트 케이스 목록 동기화
+6. findings.md에 스펙 완전성 학습 내용 추가
+
+**생성/수정 파일**:
+
+- `specs/password-change/spec.md` (수정)
+- `specs/password-change/plan.md` (수정)
+- `specs/password-change/findings.md` (수정)
+- `specs/password-change/progress.md` (수정)
+
+### 보안 및 검증 강화 ✅
+
+**작업 내역**:
+
+1. Scenario 7 수정 (동일 패스워드 변경: 200 OK → 422 에러)
+2. Scenario 9 추가 (패스워드 최대 길이 초과 → 422 에러)
+3. FR-8 추가 (동일 패스워드 변경 방지)
+4. FR-9 추가 (최대 128자 제한)
+5. SC-7 수정 (동일 패스워드 → 422 응답)
+6. SC-8 추가 (128자 초과 → 422 응답)
+7. User 모델에 패스워드 최대 길이 validation 추가
+8. PasswordsController에 동일 패스워드 검증 추가
+9. 에러 응답 형식 통일 (`{ error: "..." }`)
+10. 테스트 수정 및 추가 (동일 패스워드, 긴 패스워드, 128자 정확)
+11. before_action 패턴으로 리팩토링 (검증 로직 분리)
+
+**생성/수정 파일**:
+
+- `specs/password-change/spec.md` (수정)
+- `app/models/user.rb` (수정)
+- `app/controllers/passwords_controller.rb` (수정)
+- `test/controllers/passwords_controller_test.rb` (수정)
+- `specs/password-change/plan.md` (수정)
+- `specs/password-change/findings.md` (수정)
+- `specs/password-change/progress.md` (수정)
+
+### 코드 정리 및 리팩토링 ✅
+
+**작업 내역**:
+
+1. `password_params` 메서드로 memoization 패턴 적용
+2. 메서드 순서 정리 (before_action 호출 순서대로)
+3. helper 메서드를 마지막에 배치하여 가독성 향상
+
+**생성/수정 파일**:
+
+- `app/controllers/passwords_controller.rb` (수정)
+- `specs/password-change/findings.md` (수정)
+- `specs/password-change/progress.md` (수정)
+
 ## Test Results
 
 | Test                         | Input          | Expected | Actual | Status |
@@ -123,7 +181,10 @@
 | 다른 사용자 패스워드 변경    | other user     | 403      | 403    | ✅     |
 | 존재하지 않는 사용자         | invalid user   | 404      | 404    | ✅     |
 | 빈 새 패스워드               | empty string   | 422      | 422    | ✅     |
-| 동일한 패스워드로 변경       | same password  | 200 OK   | 200 OK | ✅     |
+| 동일한 패스워드로 변경       | same password  | 422      | 422    | ✅     |
+| 기존 패스워드 누락           | no old pass    | 422      | 422    | ✅     |
+| 128자 초과 패스워드          | 129 chars      | 422      | 422    | ✅     |
+| 정확히 128자 패스워드        | 128 chars      | 200 OK   | 200 OK | ✅     |
 
 ## Error Log
 

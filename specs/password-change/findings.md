@@ -130,3 +130,28 @@ end
 - `authenticate`는 nil/빈 문자열 입력을 명시적으로 거부해 예외를
   방지한다
 - 사용자명은 컨트롤러 간 동일한 규칙으로 정규화해야 한다
+
+### 스펙 완전성 (2026-02-16)
+
+- Acceptance Scenarios와 Functional Requirements는 1:1 대응되어야 한다
+- Success Criteria는 모든 시나리오를 커버해야 한다
+- OpenAPI 스펙의 응답 스키마는 일관성 있게 정의되어야 한다
+- 구현된 테스트가 있다면 반드시 스펙에도 시나리오로 명시해야 한다
+
+### 보안 강화 및 에러 처리 개선 (2026-02-16)
+
+- 동일 패스워드 변경 방지로 보안 강화 (무의미한 변경 차단)
+- 패스워드 최대 길이 제한 (128자)으로 DoS 공격 방지
+- 에러 응답 형식을 `{ error: "..." }` 단일 형식으로 통일하여 API
+  일관성 확보
+- validation 에러는 첫 번째 메시지만 반환하여 클라이언트 처리 단순화
+
+### before_action 패턴 활용 (2026-02-16)
+
+- 검증 로직은 before_action으로 분리하여 책임 분리
+- `verify_current_password`: 기존 패스워드 검증
+- `prevent_same_password`: 동일 패스워드 방지
+- 이점: 코드 가독성 향상, 로직 재사용 가능, 테스트 용이성
+- 메서드 순서: before_action 호출 순서대로 배치 (가독성 향상)
+- helper 메서드 (`password_params`)는 마지막에 배치
+- `set_password_params` before_action 대신 memoization 패턴 사용

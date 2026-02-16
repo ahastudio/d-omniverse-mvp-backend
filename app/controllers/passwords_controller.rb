@@ -2,23 +2,18 @@ class PasswordsController < ApplicationController
   before_action :login_required
   before_action :set_user
   before_action :verify_owner
+  before_action :verify_current_password
+  before_action :prevent_same_password
 
   def update
-    password_params = params.permit(:oldPassword, :newPassword)
-                            .transform_keys(&:underscore)
-
-    unless @user.authenticate(password_params[:old_password])
-      render json: { error: "Invalid current password" },
-             status: :unprocessable_entity
-      return
-    end
-
     @user.password = password_params[:new_password]
     @user.save!
 
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    render json: { errors: e.record.errors.full_messages },
+    error_message = e.record.errors.full_messages.first ||
+                    "Validation failed"
+    render json: { error: error_message },
            status: :unprocessable_entity
   end
 
@@ -38,5 +33,25 @@ private
     return if @user == current_user
 
     render json: { error: "Forbidden" }, status: :forbidden
+  end
+
+  def verify_current_password
+    return if @user.authenticate(password_params[:old_password])
+
+    render json: { error: "Invalid current password" },
+           status: :unprocessable_entity
+  end
+
+  def prevent_same_password
+    return unless password_params[:new_password] ==
+                  password_params[:old_password]
+
+    render json: { error: "New password must be different from current password" },
+           status: :unprocessable_entity
+  end
+
+  def password_params
+    @password_params ||= params.permit(:oldPassword, :newPassword)
+                               .transform_keys(&:underscore)
   end
 end

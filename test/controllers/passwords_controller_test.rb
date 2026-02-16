@@ -92,15 +92,44 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "새 패스워드가 기존과 동일해도 성공" do
+  test "새 패스워드가 기존과 동일하면 422 응답" do
     patch user_password_url(user_username: @user.username),
           params: { oldPassword: "password123", newPassword: "password123" },
+          headers: @auth_header,
+          as: :json
+
+    assert_response :unprocessable_entity
+
+    json = JSON.parse(response.body)
+    assert_equal "New password must be different from current password",
+                 json["error"]
+  end
+
+  test "새 패스워드가 128자 초과하면 422 응답" do
+    long_password = "a" * 129
+
+    patch user_password_url(user_username: @user.username),
+          params: { oldPassword: "password123", newPassword: long_password },
+          headers: @auth_header,
+          as: :json
+
+    assert_response :unprocessable_entity
+
+    json = JSON.parse(response.body)
+    assert_includes json["error"].downcase, "too long"
+  end
+
+  test "새 패스워드가 정확히 128자면 성공" do
+    max_password = "a" * 128
+
+    patch user_password_url(user_username: @user.username),
+          params: { oldPassword: "password123", newPassword: max_password },
           headers: @auth_header,
           as: :json
 
     assert_response :ok
 
     @user.reload
-    assert @user.authenticate("password123")
+    assert @user.authenticate(max_password)
   end
 end

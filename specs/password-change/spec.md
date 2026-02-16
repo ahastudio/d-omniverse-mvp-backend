@@ -59,7 +59,20 @@ Scenario 7: **새 패스워드가 기존과 동일**
 - Given: 사용자가 로그인 상태이고 기존 패스워드가 "oldpass123"
 - When: PATCH `/users/{username}/password` 요청
   (`oldPassword`: "oldpass123", `newPassword`: "oldpass123")
-- Then: 200 OK 응답
+- Then: 422 Unprocessable Entity 응답
+
+Scenario 8: **기존 패스워드 누락**
+
+- Given: 사용자가 로그인 상태
+- When: PATCH `/users/{username}/password` 요청
+  (`newPassword`: "newpass456", oldPassword 없음)
+- Then: 422 Unprocessable Entity 응답
+
+Scenario 9: **새 패스워드가 최대 길이 초과**
+
+- Given: 사용자가 로그인 상태
+- When: PATCH `/users/{username}/password` 요청 (새 패스워드 128자 초과)
+- Then: 422 Unprocessable Entity 응답
 
 ## Functional Requirements (mandatory)
 
@@ -70,6 +83,10 @@ Scenario 7: **새 패스워드가 기존과 동일**
 - FR-4: MUST 인증되지 않은 요청에 401 상태 코드로 응답해야 함
 - FR-5: MUST 다른 사용자의 패스워드 변경 시도에 403 상태 코드로 응답해야 함
 - FR-6: MUST 새 패스워드는 Argon2로 해싱되어 저장되어야 함
+- FR-7: MUST 새 패스워드가 빈 문자열인 경우 422 상태 코드로 응답해야 함
+- FR-8: MUST 새 패스워드가 기존과 동일한 경우 422 상태 코드로 응답해야 함
+- FR-9: MUST 새 패스워드가 128자를 초과하는 경우 422 상태 코드로
+  응답해야 함
 
 ## Constraints (mandatory)
 
@@ -83,6 +100,10 @@ Scenario 7: **새 패스워드가 기존과 동일**
 - SC-2: 잘못된 기존 패스워드로 변경 시 100% 실패 (422 응답)
 - SC-3: 인증 없는 요청은 100% 거부 (401 응답)
 - SC-4: 타인 패스워드 변경 시도는 100% 거부 (403 응답)
+- SC-5: 존재하지 않는 사용자 요청은 100% 거부 (404 응답)
+- SC-6: 빈 새 패스워드 설정 시도는 100% 실패 (422 응답)
+- SC-7: 동일한 패스워드로 변경 시도는 100% 실패 (422 응답)
+- SC-8: 128자 초과 패스워드 설정 시도는 100% 실패 (422 응답)
 
 ## OpenAPI Specification
 
@@ -133,6 +154,10 @@ paths:
           description: 패스워드 변경 성공
         '401':
           description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
           description: 권한 없음
           content:
